@@ -17,8 +17,14 @@ from django.contrib import admin
 from django.urls import path
 
 from main_menu.views import HomeView
+from attendance.views import RegisterView
+from attendance.views import CheckinView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomeView.home, name='home')
+    path('', HomeView.home, name='home'),
+    path('register', RegisterView.register, name='register'),
+    path('registration_success', RegisterView.success, name='registration_success'),
+    path('checkin', CheckinView.checkin, name='checkin')
+
 ]

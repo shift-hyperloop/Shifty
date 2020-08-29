@@ -1,0 +1,27 @@
+{% load static %}
+
+<body>
+    <div id="start"></div>
+
+    <div id="register-main">
+        <form method="POST" enctype='multipart/form-data' class="form-group">
+            {% csrf_token %}
+            {% load crispy_forms_filters %}
+            {% for field in form.visible_fields %}
+            <div class="register-form-field">
+                {{ field.errors | as_crispy_errors }}
+                {{ field | as_crispy_field }}
+            </div>
+            {% endfor %}
+
+            <h2>
+                Tap your student card to register it
+            </h2>
+
+            <!-- Make some feedback for whether the card has been found (prob JavaScript?) -->
+
+            <button type="submit" class="register-button" >Create User</button>
+        </form>
+    </div>
+</body>
+

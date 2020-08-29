@@ -10,5 +10,5 @@ class RFIDInterface:
     
     def read(self) -> str:
         # TODO: Read RFID and return number as string
-        pass
+        return '1111'
     
