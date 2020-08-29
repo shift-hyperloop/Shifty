@@ -1,0 +1,29 @@
+{% extends "attendance/base.html" %}
+
+{% block content %}
+    <h2>
+        Tap your student card to check in 
+    </h2>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    console.log("OOO")
+       $.ajax({
+            url: "/checkin",
+            type: "POST",
+            data :{},
+            success:function(data){
+                if (data.success) {
+                    alert("Successfully checked in")
+                }
+                else {
+                    alert("Could not find user, have you registered?")
+                }
+            },
+            error:function(error){
+                
+            }
+        });
+</script>
+{% endblock javascript %} 

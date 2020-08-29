@@ -77,6 +77,7 @@ WSGI_APPLICATION = 'shifty.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+""" Uncomment for MySQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -85,6 +86,14 @@ DATABASES = {
         'PASSWORD': os.environ.get('SHIFTY_MYSQL_PASSWORD'),
         'HOST': os.environ.get('SHIFTY_MYSQL_HOST'),
         'PORT': os.environ.get('SHIFTY_MYSQL_PORT'),
+    }
+}
+"""
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
     }
 }
 

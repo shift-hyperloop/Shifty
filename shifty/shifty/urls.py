@@ -25,6 +25,7 @@ urlpatterns = [
     path('', HomeView.home, name='home'),
     path('register', RegisterView.register, name='register'),
     path('registration_success', RegisterView.success, name='registration_success'),
-    path('checkin', CheckinView.checkin, name='checkin')
+    path('checkin', CheckinView.checkin, name='checkin'),
+    path('checkin_success', CheckinView.success, name='checkin_success')
 
 ]

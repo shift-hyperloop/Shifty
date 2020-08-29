@@ -1,6 +1,8 @@
 import datetime
 
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from rfid.rfid_interface import RFIDInterface
 from .models import Attendance
@@ -14,22 +16,43 @@ class CheckinView:
     """
 
     @staticmethod
+    @csrf_exempt 
     def checkin(request):
         """
         Function for checking in
         :param request: The http request
         :return: The rendered HTML file
         """
+        if request.method == 'POST':
+            
+            data = {
+                'success': CheckinView.post_attendance()
+            }
+            return JsonResponse(data)
+
+        elif request.method == 'GET':
+            return render(request, 'attendance/checkin.html')
+        
+
+    @staticmethod
+    def success(request):
+        return render(request, 'attendance/checkin_success.html')
+
+    @staticmethod
+    def post_attendance() -> bool:
         rfid_interface = RFIDInterface()
         rfid = rfid_interface.read()
 
-        user = RFIDUser.objects.get(rfid = rfid)
+        try:
+            user = RFIDUser.objects.get(rfid=rfid)
+        except RFIDUser.DoesNotExist:
+            return False
 
-        time = datetime.datetime.now()
+        chekin_time = datetime.datetime.now()
 
-        Attendance.objects.create(user=user, check_in=time)
-
-        return render(request, 'attendance/checkin_success.html')
+        Attendance.objects.create(user=user, check_in=chekin_time)
+        return True
+        
 
 class RegisterView:
     """
@@ -57,8 +80,6 @@ class RegisterView:
                 user.refresh_from_db()
                 user.save()
                 return redirect('/registration_success')
-            else:
-                print(form.errors)
         else:
             form = RegisterForm()
 
