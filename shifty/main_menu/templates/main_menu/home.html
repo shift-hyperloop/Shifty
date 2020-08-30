@@ -1,10 +1,24 @@
-{% load static %}
+{% extends "main_menu/base.html" %}
 
-<body>
-<div id="navbar">
-    <h1>
-        Shifty
-    </h1>
+{% block content %}
 
-</div>
-</body>
+    <div id="navbar">
+        <h1>
+            Shifty
+        </h1>
+        <div id="buttons">
+            <form action=/checkin>
+                <input type="submit" value="Check In">
+            </form>
+            <form action=/checkout>
+                <input type="submit" value="Check Out">
+            </form>
+            <form action=/register>
+                <input type="submit" value="Register">
+            </form>
+        </div>
+        
+
+    </div>
+
+{% endblock content %}

@@ -1,6 +1,6 @@
-{% load static %}
+{% extends "attendance/base.html" %}
 
-<body>
+{% block content %}
     <div id="start"></div>
 
     <div id="register-main">
@@ -14,14 +14,13 @@
             </div>
             {% endfor %}
 
-            <h2>
-                Tap your student card to register it
-            </h2>
+            <button type="submit" class="register-button">Press To Register Card</button>
 
-            <!-- Make some feedback for whether the card has been found (prob JavaScript?) -->
-
-            <button type="submit" class="register-button" >Create User</button>
+            <!-- Add something to show it's waiting for card input on button click-->
         </form>
     </div>
-</body>
+{% endblock content %}
 
+{% block javascript %}
+
+{% endblock javascript %} 

@@ -2,22 +2,22 @@
 
 {% block content %}
     <h2>
-        Tap your student card to check in 
+        Tap your student card to check out 
     </h2>
 {% endblock content %}
 
 {% block javascript %}
 <script>
        $.ajax({
-            url: "/checkin",
+            url: "/checkout",
             type: "POST",
             data :{},
             success:function(data){
                 if (data.success) {
-                    alert("Successfully checked in")
+                    alert("Successfully checked out")
                 }
                 else {
-                    alert("Could not find user, have you registered?")
+                    alert("Could not find user, have you registered and checked in?")
                 }
             },
             error:function(error){

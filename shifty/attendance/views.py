@@ -48,10 +48,56 @@ class CheckinView:
         except RFIDUser.DoesNotExist:
             return False
 
-        chekin_time = datetime.datetime.now()
+        checkin_time = datetime.datetime.now()
 
-        Attendance.objects.create(user=user, check_in=chekin_time)
+        Attendance.objects.create(user=user, check_in=checkin_time)
         return True
+
+class CheckoutView:
+    """
+    Class for the check-out view
+    """
+
+    @staticmethod
+    @csrf_exempt 
+    def checkout(request):
+        """
+        Function for checking out
+        :param request: The http request
+        :return: The rendered HTML file
+        """
+        if request.method == 'POST':
+            
+            data = {
+                'success': CheckoutView.post_attendance()
+            }
+            return JsonResponse(data)
+
+        elif request.method == 'GET':
+            return render(request, 'attendance/checkout.html')
+        
+
+    @staticmethod
+    def success(request):
+        return render(request, 'attendance/checkout_success.html')
+
+    @staticmethod
+    def post_attendance() -> bool:
+        rfid_interface = RFIDInterface()
+        rfid = rfid_interface.read()
+
+        try:
+            user = RFIDUser.objects.get(rfid=rfid)
+        except RFIDUser.DoesNotExist:
+            return False
+
+        checkout_time = datetime.datetime.now()
+
+        attendace = Attendance.objects.filter(user=user).order_by('-check_in').first()
+        setattr(attendace, 'check_out', checkout_time)
+        attendace.save()
+        return True
+
         
 
 class RegisterView:
@@ -66,18 +112,19 @@ class RegisterView:
         :param request: The http request
         :return: The rendered HTML file
         """
-        rfid_interface = RFIDInterface()
-        rfid = rfid_interface.read()
+        
 
         if request.method == 'POST':
 
-            form = RegisterForm(request.POST, request.FILES)
-            form.rfid = rfid
+            rfid_interface = RFIDInterface()
+            rfid = rfid_interface.read()
+            form = RegisterForm(request.POST)
 
             # Save model from form is valid
             if form.is_valid():
                 user = form.save()
-                user.refresh_from_db()
+                setattr(user, 'rfid', rfid)
+                #user.refresh_from_db()
                 user.save()
                 return redirect('/registration_success')
         else:

@@ -17,8 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from main_menu.views import HomeView
-from attendance.views import RegisterView
-from attendance.views import CheckinView
+from attendance.views import RegisterView, CheckinView, CheckoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +25,8 @@ urlpatterns = [
     path('register', RegisterView.register, name='register'),
     path('registration_success', RegisterView.success, name='registration_success'),
     path('checkin', CheckinView.checkin, name='checkin'),
-    path('checkin_success', CheckinView.success, name='checkin_success')
+    path('checkin_success', CheckinView.success, name='checkin_success'),
+    path('checkout', CheckoutView.checkout, name='checkout'),
+    path('checkout_success', CheckoutView.success, name='checkout_success'),
 
 ]
