@@ -1,14 +1,22 @@
 """
 RFID Interface
 """
+import RPi.GPIO as GPIO
+from mfrc522 import SimpleMFRC522
+
 
 class RFIDInterface:
 
     def __init__(self):
-        # TODO: Setup RFID stuff 
-        pass
+        self.reader = SimpleMFRC522()
     
     def read(self) -> str:
-        # TODO: Read RFID and return number as string
-        return '1111'
+        try:
+            rfid, text = self.reader.read()
+            return rfid
+
+        finally:
+            GPIO.cleanup()
     
+
+
