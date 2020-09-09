@@ -1,0 +1,15 @@
+{% extends "attendance/base.html" %}
+
+{% block content %}
+    {% for message in messages %}
+        <h2>
+            Welcome, {message}!
+        </h2>
+    {% endfor %}
+    <h2>
+        Tap your student card to register it
+    </h2>
+{% endblock content %}
+
+{% block javascript %}
+{% endblock javascript %} 

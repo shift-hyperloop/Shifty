@@ -7,22 +7,4 @@
 {% endblock content %}
 
 {% block javascript %}
-<script>
-       $.ajax({
-            url: "/checkout",
-            type: "POST",
-            data :{},
-            success:function(data){
-                if (data.success) {
-                    alert("Successfully checked out")
-                }
-                else {
-                    alert("Could not find user, have you registered and checked in?")
-                }
-            },
-            error:function(error){
-                
-            }
-        });
-</script>
 {% endblock javascript %} 

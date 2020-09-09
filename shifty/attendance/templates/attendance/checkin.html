@@ -7,22 +7,5 @@
 {% endblock content %}
 
 {% block javascript %}
-<script>
-       $.ajax({
-            url: "/checkin",
-            type: "POST",
-            data :{},
-            success:function(data){
-                if (data.success) {
-                    alert("Successfully checked in")
-                }
-                else {
-                    alert("Could not find user, have you registered?")
-                }
-            },
-            error:function(error){
-                
-            }
-        });
-</script>
+
 {% endblock javascript %} 
