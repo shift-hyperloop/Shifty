@@ -26,7 +26,7 @@ SECRET_KEY = '%6k&0q9x^wc4z3!v)uusz42g#6mkuyvkm+v1^8^ee#g-8%#$_-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['84.202.103.69']
 
 
 # Application definition
@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'shifty.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('SHIFTY_MYSQL_DATABASE'),
@@ -86,14 +86,14 @@ DATABASES = {
         'HOST': os.environ.get('SHIFTY_MYSQL_HOST'),
         'PORT': os.environ.get('SHIFTY_MYSQL_PORT'),
     }
-}
+}"""
 
-"""DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'mydatabase',
     }
-}"""
+}
 
 
 

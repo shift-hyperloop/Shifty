@@ -18,6 +18,7 @@ from django.urls import path
 
 from main_menu.views import HomeView
 from attendance.views import RegisterView, CheckinView, CheckoutView
+from doorbell.views import Doorbell
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,5 +29,6 @@ urlpatterns = [
     path('checkin_success', CheckinView.success, name='checkin_success'),
     path('checkout', CheckoutView.checkout, name='checkout'),
     path('checkout_success', CheckoutView.success, name='checkout_success'),
+    path('doorbell', Doorbell.doorbell, name='doorbell')
 
 ]

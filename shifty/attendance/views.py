@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from rfid.rfid_interface import RFIDInterface
 from .models import Attendance
 from .models import RFIDUser
 from .forms import RegisterForm
@@ -83,8 +82,6 @@ class CheckoutView:
 
     @staticmethod
     def post_attendance() -> bool:
-        rfid_interface = RFIDInterface()
-        rfid = rfid_interface.read()
 
         try:
             user = RFIDUser.objects.get(rfid=rfid)
