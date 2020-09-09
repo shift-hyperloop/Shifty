@@ -3,14 +3,16 @@ from urllib.parse import urlparse
 
 import requests
 
-import RPi.GPIO as GPIO
-from mfrc522 import SimpleMFRC522
+"""import RPi.GPIO as GPIO
+from mfrc522 import SimpleMFRC522"""
 
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 
-rfid_paths = ['checkin', 'checkout', 'register']
+rfid_paths = ['checkin', 'checkout', 'rfid_register']
 
-reader = SimpleMFRC522()
+#reader = SimpleMFRC522()
 
 endpoint = os.environ.get('RFID_ENDPOINT')
 
@@ -27,10 +29,17 @@ while True:
     if url_path not in rfid_paths:
         continue
 
-    try:
+    """try:
         rfid, text = reader.read()
 
     finally:
-         GPIO.cleanup()
+         GPIO.cleanup()"""
+    rfid = '1234'
 
-    requests.post(url=endpoint, data={'rfid': rfid, 'type': url_path})
+    response = requests.post(url=endpoint, data={'rfid': rfid, 'type': url_path}).json()
+    if response['success'] and url_path == 'checkin':
+        browser.get(os.environ.get('INDEX_URL') + '/checkin_success')
+    if response['success'] and url_path == 'checkout':
+        browser.get(os.environ.get('INDEX_URL') + '/checkout_success')
+    if response['success'] and url_path == 'register':
+        browser.get(os.environ.get('INDEX_URL') + '/register_success')
