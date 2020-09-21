@@ -113,53 +113,27 @@ class RFIDView:
     def rfid_endpoint(request):
         if request.method == 'POST':
             rfid = request.POST['rfid']
-            request_type = request.POST['type']
 
-            if request_type == 'checkin':
-                try:
-                    user = RFIDUser.objects.get(rfid=rfid)
-                except RFIDUser.DoesNotExist:
-                    return JsonResponse(dict(success=False))
+            try:
+                user = RFIDUser.objects.get(rfid=rfid)
+            except Exception as e:
+                user = None
 
-                checkin_time = datetime.datetime.now()
+            if user:
 
-                Attendance.objects.create(user=user, check_in=checkin_time)
-                """if at_office == 0:
-                    RFIDView.office_opened()
+                current_time = datetime.datetime.now()
 
-                at_office += 1"""
-                return JsonResponse(dict(success=True))
+                attendance = Attendance.objects.all().order_by('-check_in').first()
 
-            elif request_type == 'checkout':
-                try:
-                    user = RFIDUser.objects.get(rfid=rfid)
-                except RFIDUser.DoesNotExist:
-                    return JsonResponse(dict(success=False))
-
-                checkout_time = datetime.datetime.now()
-
-                attendace = Attendance.objects.filter(user=user).order_by('-check_in').first()
-                setattr(attendace, 'check_out', checkout_time)
-                attendace.save()
-
-                """at_office -= 1
-                if at_office == 0:
-                    RFIDView.office_closed()"""
-
-                return JsonResponse(dict(success=True))
-
-            elif request_type == 'register':
-                form = RegisterForm(request.POST)
-
-                # Save model from form is valid
-                if form.is_valid():
-                    user = form.save()
-                    setattr(user, 'rfid', rfid)
-                    user.save()
-                    return JsonResponse(dict(success=True))
+                if attendance.check_out == None:
+                    Attendance.objects.create(user=user, check_in=current_time)
                 else:
-                    print(form)
-                    return HttpResponse(404)
+                    setattr(attendance, 'check_out', current_time)
+                    attendace.save()
+
+                return JsonResponse(dict(success=True))
+            else:
+                print('User not registered!')
 
     @staticmethod
     def office_opened():
