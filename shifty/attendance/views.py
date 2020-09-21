@@ -115,6 +115,7 @@ class RFIDView:
             rfid = request.POST['rfid']
 
             try:
+                print(rfid)
                 user = RFIDUser.objects.get(rfid=rfid)
             except Exception as e:
                 user = None
