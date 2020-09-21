@@ -109,8 +109,7 @@ class RFIDView:
     """
 
     
-    @csrf_exempt 
-    @staticmethod
+    @csrf_exempt
     def rfid_endpoint(request):
         if request.method == 'POST':
             rfid = request.POST['rfid']
@@ -126,7 +125,9 @@ class RFIDView:
 
                 attendance = Attendance.objects.all().order_by('-check_in').first()
 
-                if attendance.check_out == None:
+                if not attendance:
+                    Attendance.objects.create(user=user, check_in=current_time)
+                elif attendance.check_out:
                     Attendance.objects.create(user=user, check_in=current_time)
                 else:
                     setattr(attendance, 'check_out', current_time)
