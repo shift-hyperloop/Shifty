@@ -108,8 +108,9 @@ class RFIDView:
     Endpoint for posting RFID info
     """
 
-    @staticmethod
+    
     @csrf_exempt 
+    @staticmethod
     def rfid_endpoint(request):
         if request.method == 'POST':
             rfid = request.POST['rfid']
