@@ -14,15 +14,20 @@ while True:
 
     try:
         rfid, text = reader.read()
-        print(datetime.datetime.now().replace(microsecond=0).isoformat(' ', 'seconds') + ' - Scanned RFID: ' + str(rfid))
-        os.system('mpg321 -q Ding-dong.mp3 &')
-        time.sleep(3)
+        print()
+        print(datetime.datetime.now().replace(microsecond=0).isoformat(' ', 'seconds'))
+        print('Scanned RFID: ' + str(rfid))
 
     finally:
-         GPIO.cleanup()
+        time.sleep(.1)
+        GPIO.cleanup()
 
     try:
-         response = requests.post(url=endpoint, data={'rfid': rfid, 'type': 'checkin'}).json()
+        response = requests.post(url=endpoint, data={'rfid': rfid, 'type': 'checkin'}).json()
+        os.system('mpg321 -q Ding-dong.mp3 &')
 
     except Exception as e:
-         print(datetime.datetime.now().replace(microsecond=0).isoformat(' ', 'seconds') + ' - User does not exist!')
+        print('ERROR! User not found =( !')
+        os.system('mpg321 -q Error.mp3 &')
+
+    time.sleep(3)
