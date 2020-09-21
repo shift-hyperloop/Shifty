@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'main_menu.apps.MainMenuConfig',
     'attendance.apps.AttendanceConfig',
+    'doorbell.apps.DoorbellConfig',
 ]
 
 MIDDLEWARE = [
