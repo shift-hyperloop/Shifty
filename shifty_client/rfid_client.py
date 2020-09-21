@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions
 
 rfid_paths = ['checkin', 'checkout', 'rfid_register']
 
-#reader = SimpleMFRC522()
+reader = SimpleMFRC522()
 
 endpoint = os.environ.get('RFID_ENDPOINT')
 
@@ -29,12 +29,11 @@ while True:
     if url_path not in rfid_paths:
         continue
 
-    """try:
+    try:
         rfid, text = reader.read()
 
     finally:
-         GPIO.cleanup()"""
-    rfid = '1234'
+         GPIO.cleanup()
 
     response = requests.post(url=endpoint, data={'rfid': rfid, 'type': url_path}).json()
     if response['success'] and url_path == 'checkin':
