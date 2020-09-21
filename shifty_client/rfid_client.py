@@ -3,8 +3,8 @@ from urllib.parse import urlparse
 
 import requests
 
-"""import RPi.GPIO as GPIO
-from mfrc522 import SimpleMFRC522"""
+import RPi.GPIO as GPIO
+from mfrc522 import SimpleMFRC522
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
