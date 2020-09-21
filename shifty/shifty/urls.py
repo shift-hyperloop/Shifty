@@ -18,7 +18,7 @@ from django.urls import path
 
 from main_menu.views import HomeView
 from attendance.views import RegisterView, CheckinView, CheckoutView, RFIDView
-from doorbell.views import Doorbell
+from doorbell.views import doorbell
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,7 +30,7 @@ urlpatterns = [
     path('checkin_success', CheckinView.success, name='checkin_success'),
     path('checkout', CheckoutView.checkout, name='checkout'),
     path('checkout_success', CheckoutView.success, name='checkout_success'),
-    path('doorbell', Doorbell.doorbell, name='doorbell'),
+    path('doorbell', doorbell, name='doorbell'),
     path('rfid', RFIDView.rfid_endpoint, name='rfid')
 
 ]
