@@ -132,7 +132,7 @@ class RFIDView:
                     Attendance.objects.create(user=user, check_in=current_time)
                 else:
                     setattr(attendance, 'check_out', current_time)
-                    attendace.save()
+                    attendance.save()
 
                 return JsonResponse(dict(success=True))
             else:
