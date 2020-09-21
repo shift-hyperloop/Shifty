@@ -1,3 +1,7 @@
 from django.db import models
 
-# Create your models here.
+class Ringing(models.Model):
+    """
+    Class for Attendance model
+    """
+    is_ringing = models.BooleanField(unique=True)
