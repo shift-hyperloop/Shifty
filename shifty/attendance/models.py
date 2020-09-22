@@ -22,4 +22,10 @@ class RFIDUser(models.Model):
     def __str__(self):
         return f'{self.given_name} {self.family_name}'
 
+class AtOffice(models.Model):
+    """
+    Class for AtOffice model
+    """
+    at_office = models.IntegerField()
+
 
