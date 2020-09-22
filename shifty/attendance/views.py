@@ -33,7 +33,7 @@ class RFIDView:
                 current_time = datetime.datetime.now()
 
                 attendance = Attendance.objects.filter(user=user).order_by('-check_in').first()
-                at_office_obj = AtOffice.objects.all().filter().first()
+                at_office_obj = AtOffice.objects.all().first()
                 
 
                 if not attendance:
