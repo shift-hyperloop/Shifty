@@ -17,19 +17,11 @@ from django.contrib import admin
 from django.urls import path
 
 from main_menu.views import HomeView
-from attendance.views import RegisterView, CheckinView, CheckoutView, RFIDView
+from attendance.views import RFIDView
 from doorbell.views import doorbell
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomeView.home, name='home'),
-    path('register', RegisterView.register, name='register'),
-    path('rfid_register', RegisterView.rifd_register, name='rfid_register'),
-    path('registration_success', RegisterView.success, name='registration_success'),
-    path('checkin', CheckinView.checkin, name='checkin'),
-    path('checkin_success', CheckinView.success, name='checkin_success'),
-    path('checkout', CheckoutView.checkout, name='checkout'),
-    path('checkout_success', CheckoutView.success, name='checkout_success'),
     path('doorbell', doorbell, name='doorbell'),
     path('rfid', RFIDView.rfid_endpoint, name='rfid')
 
