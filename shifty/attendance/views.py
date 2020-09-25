@@ -1,15 +1,13 @@
 import os
 import datetime
 
-from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from slack import WebClient
 
 from .models import Attendance, AtOffice
 from .models import RFIDUser
-from .forms import RegisterForm
 
 class RFIDView:
     """
@@ -44,6 +42,7 @@ class RFIDView:
                     at_office_num += 1
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
+                    return JsonResponse(dict(success=True, type='check_in'))
 
                 elif attendance.check_out:
                     Attendance.objects.create(user=user, check_in=current_time)
@@ -53,6 +52,8 @@ class RFIDView:
                     at_office_num += 1
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
+                    return JsonResponse(dict(success=True, type='check_in'))
+
                 else:
                     at_office_num = at_office_obj.at_office
                     if at_office_num == 1:
@@ -63,20 +64,27 @@ class RFIDView:
                     setattr(attendance, 'check_out', current_time)
                     attendance.save()
 
-                return JsonResponse(dict(success=True))
+                    return JsonResponse(dict(success=True, type='check_out'))
             else:
-                print('User not registered!')
+                return JsonResponse(dict(success=False))
 
     @staticmethod
     def office_opened():
         slack_api_token = os.environ.get('SLACK_API_TOKEN')
         client = WebClient(token=slack_api_token)
-        client.chat_postMessage(channel='#office-status', text='Office is OPEN!')
+        client.chat_update(channel='C01BV9EHN48', ts='1601053648.000100', text='Office is OPEN! :green_apple:')
 
     @staticmethod
     def office_closed():
         slack_api_token = os.environ.get('SLACK_API_TOKEN')
         client = WebClient(token=slack_api_token)
-        client.chat_postMessage(channel='#office-status', text='Office is CLOSED!')
+        client.chat_update(channel='C01BV9EHN48', ts='1601053648.000100', text='Office is CLOSED! :red_circle:')
+    
+    @staticmethod
+    def update_at_office(at_office: int):
+        slack_api_token = os.environ.get('SLACK_API_TOKEN')
+        client = WebClient(token=slack_api_token)
+        client.chat_update(channel='C01BV9EHN48', ts='1601054690.000600', text=f'Currently at office: {at_office}')
+
 
 
