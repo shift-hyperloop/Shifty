@@ -33,9 +33,9 @@ while True:
             os.system('mpg321 -q SoundFX/Error.mp3 &')
 
     except Exception as e:
-        print('ERROR! Could not connect to server!')
+        print(e)
         os.system('mpg321 -q SoundFX/Error.mp3 &')
 
     time.sleep(3)
 
-GPIO.cleanup()
+    GPIO.cleanup()
