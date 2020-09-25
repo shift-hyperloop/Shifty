@@ -17,17 +17,25 @@ while True:
         print()
         print(datetime.datetime.now().replace(microsecond=0).isoformat(' ', 'seconds'))
         print('Scanned RFID: ' + str(rfid))
-
-    finally:
-        time.sleep(.1)
-        GPIO.cleanup()
+    
+    except Exception as e:
+        print(e)
 
     try:
         response = requests.post(url=endpoint, data={'rfid': rfid, 'type': 'checkin'}).json()
-        os.system('mpg321 -q Ding-dong.mp3 &')
+        if response['success']:
+            if response['type'] == 'check_in':
+                os.system('mpg321 -q SoundFX/Checkin.mp3 &')
+            elif response['type'] == 'check_out':
+                os.system('mpg321 -q SoundFX/Checkout.mp3 &')
+        else:
+            print('User not found =( !')
+            os.system('mpg321 -q SoundFX/Error.mp3 &')
 
     except Exception as e:
-        print('ERROR! User not found =( !')
-        os.system('mpg321 -q Error.mp3 &')
+        print('ERROR! Could not connect to server!')
+        os.system('mpg321 -q SoundFX/Error.mp3 &')
 
     time.sleep(3)
+
+GPIO.cleanup()
