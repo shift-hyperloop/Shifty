@@ -20,6 +20,7 @@ while True:
     
     except Exception as e:
         print(e)
+        GPIO.cleanup()
 
     try:
         response = requests.post(url=endpoint, data={'rfid': rfid, 'type': 'checkin'}).json()
@@ -35,7 +36,7 @@ while True:
     except Exception as e:
         print(e)
         os.system('mpg321 -q SoundFX/Error.mp3 &')
+        GPIO.cleanup()
 
     time.sleep(3)
 
-    GPIO.cleanup()
