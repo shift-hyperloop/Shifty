@@ -40,6 +40,7 @@ class RFIDView:
                     if at_office_num == 0:
                         RFIDView.office_opened()
                     at_office_num += 1
+                    RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
                     return JsonResponse(dict(success=True, type='check_in'))
@@ -50,6 +51,7 @@ class RFIDView:
                     if at_office_num == 0:
                         RFIDView.office_opened()
                     at_office_num += 1
+                    RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
                     return JsonResponse(dict(success=True, type='check_in'))
@@ -59,6 +61,7 @@ class RFIDView:
                     if at_office_num == 1:
                         RFIDView.office_closed()
                     at_office_num -= 1
+                    RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
                     setattr(attendance, 'check_out', current_time)
