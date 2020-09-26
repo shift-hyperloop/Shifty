@@ -5,15 +5,20 @@ import requests
 
 endpoint = os.environ.get('DOORBELL_ENDPOINT')
 
-while True:
-
-    result = requests.get(endpoint).json()
-
-    if result['is_ringing']:
-        play_sound()
-    
-    time.sleep(5)
 
 def play_sound():
-    # TODO: Play ringing sound
-    pass
+    os.system('mpg321 -q SoundFX/Ding-dong.mp3 &')
+
+
+while True:
+    try:
+        result = requests.get(endpoint).json()
+
+        if result['is_ringing']:
+            play_sound()
+
+    except Exception as e:
+        print('ERROR')
+        time.sleep(10)
+
+    time.sleep(5)
