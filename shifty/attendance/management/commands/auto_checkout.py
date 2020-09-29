@@ -12,8 +12,10 @@ class Command(BaseCommand):
         current_time = datetime.datetime.now()
         for a in attendances:
             setattr(a, 'check_out', current_time)
-            
+
         RFIDView.update_at_office(0)
         RFIDView.office_closed()
+
+        delete_attendances = Attendance.objects.filter(check_in__lte=datetime.datetime.now() - datetime.timedelta(days=10)).delete()
 
         
