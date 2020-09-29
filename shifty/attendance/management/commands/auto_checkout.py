@@ -1,7 +1,7 @@
 import datetime
 
 from django.core.management.base import BaseCommand, CommandError
-from attendance.models import Attendance
+from attendance.models import Attendance, AtOffice
 from attendance.views import RFIDView
 
 class Command(BaseCommand):
@@ -12,6 +12,9 @@ class Command(BaseCommand):
         current_time = datetime.datetime.now()
         for a in attendances:
             setattr(a, 'check_out', current_time)
+
+        at_office = AtOffice.objects.first()
+        setattr(at_office, 'at_office', 0)
 
         RFIDView.update_at_office(0)
         RFIDView.office_closed()
