@@ -36,7 +36,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setFixedSize(1440, 1080)
 
-window = MainWindow()
+shop_item = ShopItem(uuid='123', name='Coke', price=12, image_url='https://images.costcobusinessdelivery.com/ImageDelivery/imageService?profileId=12028466&imageId=854330__1&recipeName=350')
 
-window.show()
 app.exec_()
