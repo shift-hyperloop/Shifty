@@ -88,6 +88,3 @@ class RFIDView:
         slack_api_token = os.environ.get('SLACK_API_TOKEN')
         client = WebClient(token=slack_api_token)
         client.chat_update(channel='C01BV9EHN48', ts='1601054690.000600', text=f'Currently at office: {at_office}')
-
-
-
