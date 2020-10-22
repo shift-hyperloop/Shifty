@@ -3,17 +3,21 @@ import os
 from django.shortcuts import render
 from django.http.response import HttpResponse
 from slack import WebClient
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def testing(request):
-	client = WebClient(os.environ.get('SLACK_API_TOKEN'))
+	client = WebClient(token=os.environ.get('SLACK_API_TOKEN'))
 	if request.method == "POST":
-		os.system(f"wall 'hello bendik, this is a post: {request}'")
 		user_id = request.POST['user_id']
-		user_info = client.users_info(user_id)
-		real_name = user_info['real_name']
-		email = user_info['profile']['email'] 
+		user_info = client.users_info(user=user_id)
+		print(user_info)
+		real_name = user_info['user']['profile']['real_name']
+		email = user_info['user']['profile']['email'] 
+		phone = user_info['user']['profile']['phone']
 
-		print(f"POST req: {email}")
+		print(f"Email: {email}")
+		print(f'Phone: {phone}')
 	elif request.method == "GET":
 		os.system(f"wall 'Yo bendik, this is a get: {request}'")
 		print(f"GET req: {request}")
