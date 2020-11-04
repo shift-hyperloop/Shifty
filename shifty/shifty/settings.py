@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = 'nivu6c-m71g^+_-xt&3qj@qtz$s-i(fp)gy*gw8=%b&(5^kt#q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'main_menu.apps.MainMenuConfig',
     'attendance.apps.AttendanceConfig',
     'doorbell.apps.DoorbellConfig',
+    "internal_kiosk_website",
 ]
 
 MIDDLEWARE = [
