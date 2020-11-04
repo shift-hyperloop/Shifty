@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
 from attendance.views import RFIDView
 from doorbell.views import doorbell
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,5 @@ urlpatterns = [
     path('doorbell', doorbell, name='doorbell'),
     path('rfid', RFIDView.rfid_endpoint, name='rfid'),
     path('',include("internal_kiosk_website.urls")),
+    path('testing/',include("testing.urls")),
 ]

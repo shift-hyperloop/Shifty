@@ -26,7 +26,7 @@ SECRET_KEY = 'nivu6c-m71g^+_-xt&3qj@qtz$s-i(fp)gy*gw8=%b&(5^kt#q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['84.202.103.69', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'attendance.apps.AttendanceConfig',
     'doorbell.apps.DoorbellConfig',
     "internal_kiosk_website",
+    'testing',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +74,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'shifty.wsgi.application'
 
 
 # Database
