@@ -1,13 +1,13 @@
 # Shifty
 
-This project handles admission to the Shift office using RFID
+This project handles all the minor utility codes used by Shift Hyperloop
 
 ## Features
 
 The main features of this project include:
 
-- Check-in via RFID
-- Check-out via RFID
+- Checkin and checkout via RFID
+- Kiosk
 
 # Getting Started
 
@@ -52,4 +52,3 @@ The main dependencies of this project are:
 
 - [django](https://pypi.org/project/Django/)
 - [mysqlclient](https://pypi.org/project/mysqlclient/)
-
