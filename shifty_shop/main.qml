@@ -10,6 +10,8 @@ Window {
 
     Text {
         id: title
+        x: parent.width/2 - this.width/2
+        y: 29
         width: 700
         height: 74
         color: "#0090d8"
@@ -41,23 +43,12 @@ Window {
 
             TextEdit {
                 id: priceString
+                text: ""
                 anchors.right: parent.right
                 horizontalAlignment: Text.AlignRight
                 font.pointSize: 18
-                objectName: "PriceString"
+                objectName: "productString"
             }
-
-            /*TextEdit {
-                id: priCeString
-                x: 695
-                y: 107
-                width: 189
-                height: 98
-                text: qsTr("Text Edit")
-                font.pixelSize: 18
-                horizontalAlignment: Text.AlignRight
-                verticalAlignment: Text.AlignTop
-                */
 
 
         }
@@ -70,10 +61,10 @@ Window {
             height: 775
             objectName: "Right Column"
 
-            Text {
-                text: "69kr\n"
+            TextEdit {
+                text: ""
                 font.pointSize: 18
-                objectName: "Price List"
+                objectName: "priceString"
             }
         }
 
