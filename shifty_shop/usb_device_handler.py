@@ -10,8 +10,8 @@ def get_distance():
     GPIO.setmode(GPIO.BCM)              # BCM mode
      
     #set GPIO Pins
-    GPIO_TRIGGER = 18                   # TRIGGER is connected to pin 18
-    GPIO_ECHO = 16                      # ECHO is connected to pin 24
+    GPIO_TRIGGER = 3                    # TRIGGER is connected to pin 18
+    GPIO_ECHO = 2                       # ECHO is connected to pin 24
      
     #set GPIO direction (IN / OUT)
     GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
