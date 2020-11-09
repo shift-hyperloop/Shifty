@@ -6,6 +6,17 @@ import RPi.GPIO as GPIO
 
 
 def get_distance():
+    #GPIO Mode (BOARD / BCM)
+    GPIO.setmode(GPIO.BCM)              # BCM mode
+     
+    #set GPIO Pins
+    GPIO_TRIGGER = 18                   # TRIGGER is connected to pin 18
+    GPIO_ECHO = 16                      # ECHO is connected to pin 24
+     
+    #set GPIO direction (IN / OUT)
+    GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
+    GPIO.setup(GPIO_ECHO, GPIO.IN)      # ECHO is set to input
+
     print("entered get distance")
     # set Trigger to HIGH
     GPIO.output(GPIO_TRIGGER, True)
@@ -18,13 +29,16 @@ def get_distance():
     StopTime = time.time()
  
     # save StartTime
+    print("before gpioech = 0")
     while GPIO.input(GPIO_ECHO) == 0:
         StartTime = time.time()
- 
+    
+    print("after gpioecho = 0, before gpioecho = 1")
     # save time of arrival
     while GPIO.input(GPIO_ECHO) == 1:
         StopTime = time.time()
- 
+    
+    print("after gpioecho = 1")
     # time difference between start and arrival
     TimeElapsed = StopTime - StartTime
     # multiply with the sonic speed (34300 cm/s)
@@ -77,18 +91,8 @@ q_RFID = queue.SimpleQueue()        # Queue used for transferring the intercepte
 q_barcode = queue.SimpleQueue()     # Queue used for transferring the intercepted number sequences
 q_distance = queue.SimpleQueue()    # Queue for distance sensor
 
-#GPIO Mode (BOARD / BCM)
-GPIO.setmode(GPIO.BCM)              # BCM mode
- 
-#set GPIO Pins
-GPIO_TRIGGER = 18                   # TRIGGER is connected to pin 18
-GPIO_ECHO = 24                      # ECHO is connected to pin 24
- 
-#set GPIO direction (IN / OUT)
-GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
-GPIO.setup(GPIO_ECHO, GPIO.IN)      # ECHO is set to input
 
-GPIO.output(GPIO_TRIGGER, False)    # Setting Trigger to False for redundancy
+
 
 
 # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
