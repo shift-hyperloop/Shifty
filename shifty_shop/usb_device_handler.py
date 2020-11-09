@@ -1,6 +1,55 @@
 import evdev
 import threading
 import queue
+import time
+import RPi.GPIO as GPIO
+
+def get_distance():
+    # set Trigger to HIGH
+    GPIO.output(GPIO_TRIGGER, True)
+ 
+    # set Trigger after 0.01ms to LOW
+    time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER, False)
+ 
+    StartTime = time.time()
+    StopTime = time.time()
+ 
+    # save StartTime
+    while GPIO.input(GPIO_ECHO) == 0:
+        StartTime = time.time()
+ 
+    # save time of arrival
+    while GPIO.input(GPIO_ECHO) == 1:
+        StopTime = time.time()
+ 
+    # time difference between start and arrival
+    TimeElapsed = StopTime - StartTime
+    # multiply with the sonic speed (34300 cm/s)
+    # and divide by 2, because there and back
+    distance = (TimeElapsed * 34300) / 2
+ 
+    return distance
+
+def monitor_distance():
+    while True:
+        distance = get_distance()               # Get initial distance 
+        startTime = time.perf_counter()         # Get start time for when object enters range
+
+        while distance < 5:
+            currentTime = time.perf_counter()   # Get current time
+            distance = get_distance()           # Update distance
+
+            if currentTime-startTime > 3:         # If time held is greater than 3 seconds, delete all 
+                q_distance.put("all")
+                print("all")
+
+            elif currentTime-startTime > 0.5:       # If time held is greater than 0.5 seconds, delete last
+                q_distance.put("last")
+                print("last")
+
+
+
 
 
 # method for grabbing and monitoring an USB device, and transferring the intercepted number sequences
@@ -21,13 +70,29 @@ def monitor_device(device_id, q):
                     print(str(device.name) + ' did stuff.\n')                    # TODO: delete after debugging
                     scanned_chars = []                                           # Resets variable
 
-
+#Defining global objects
 q_RFID = queue.SimpleQueue()        # Queue used for transferring the intercepted number sequences
 q_barcode = queue.SimpleQueue()     # Queue used for transferring the intercepted number sequences
+q_distance = queue.SimpleQueue()    # Queue for distance sensor
+
+#GPIO Mode (BOARD / BCM)
+GPIO.setmode(GPIO.BCM)              # BCM mode
+ 
+#set GPIO Pins
+GPIO_TRIGGER = 18                   # TRIGGER is connected to pin 18
+GPIO_ECHO = 24                      # ECHO is connected to pin 24
+ 
+#set GPIO direction (IN / OUT)
+GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
+GPIO.setup(GPIO_ECHO, GPIO.IN)      # ECHO is set to input
+
+GPIO.output(GPIO_TRIGGER, False)    # Setting Trigger to False for redundancy
+
 
 # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
-RFID = threading.Thread(target=monitor_device, args=('/dev/input/event5', q_RFID), daemon=True).start()
-barcode = threading.Thread(target=monitor_device, args=('/dev/input/event6', q_barcode), daemon=True).start()
+RFID = threading.Thread(target=monitor_device, args=('/dev/input/event0', q_RFID), daemon=True).start()
+barcode = threading.Thread(target=monitor_device, args=('/dev/input/event1', q_barcode), daemon=True).start()
+distance_sensor = threading.Thread(target=monitor_distance, daemon=True).start()
 
 
 if __name__ == '__main__':                      # Only if this script is run directly
