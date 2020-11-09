@@ -17,7 +17,6 @@ def get_distance():
     GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
     GPIO.setup(GPIO_ECHO, GPIO.IN)      # ECHO is set to input
 
-    print("entered get distance")
     # set Trigger to HIGH
     GPIO.output(GPIO_TRIGGER, True)
  
@@ -29,22 +28,19 @@ def get_distance():
     StopTime = time.time()
  
     # save StartTime
-    print("before gpioech = 0")
     while GPIO.input(GPIO_ECHO) == 0:
         StartTime = time.time()
     
-    print("after gpioecho = 0, before gpioecho = 1")
     # save time of arrival
     while GPIO.input(GPIO_ECHO) == 1:
         StopTime = time.time()
     
-    print("after gpioecho = 1")
     # time difference between start and arrival
     TimeElapsed = StopTime - StartTime
     # multiply with the sonic speed (34300 cm/s)
     # and divide by 2, because there and back
     distance = (TimeElapsed * 34300) / 2
-    print("the distance returned from get_distance: " + distance)
+
     return distance
 
 
@@ -55,7 +51,6 @@ def monitor_distance(q):
         t0 = time.perf_counter()    # Get start time for when object enters range
 
         while distance < 5:
-            print("inside while loop in monitor_distance")
             t = time.perf_counter()     # Get current time
             distance = get_distance()   # Update distance
 
