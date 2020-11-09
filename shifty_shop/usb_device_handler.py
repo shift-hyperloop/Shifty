@@ -114,5 +114,9 @@ if __name__ == '__main__':                      # Only if this script is run dir
             if q_distance.qsize():
                 print('Distance message: ' + str(q_distance.get()))
             time.sleep(0.05)
-    except:
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        raise e
+    finally:
         GPIO.cleanup()
