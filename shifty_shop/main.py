@@ -2,7 +2,7 @@
 # Imports
 import sys
 import os
-from PySide2 import QtWidgets, QtCore, QtGui, QtQml
+from PyQt5 import QtCore, QtGui, QtQml
 from functools import partial
 import time
 import queue
@@ -46,22 +46,26 @@ def add_product(barcode, engine):
     price_string.clear()
     price_string.insert(0, new_prices)
 
+def check_inputs(engine):
+    if q_RFID.qsize():
+        pass
 
+    if q_barcode.qsize():
+        add_product(q_barcode.get(), engine)
+
+    if q_distance.qsize():
+        pass
+
+ 
 def run():
     app = QtGui.QGuiApplication(sys.argv)
     myEngine = QtQml.QQmlApplicationEngine()
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    if q_RFID.qsize():
-        pass
-
-    if q_barcode.qsize():
-        add_product(q_barcode.get(), myEngine)
-
-    if q_distance.qsize():
-        pass
-
+    timer = QtCore.QTimer(interval=200)
+    timer.timeout.connect(partial(check_inputs, myEngine))
+    timer.start()
     return app.exec_()
 
 
