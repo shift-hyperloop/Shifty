@@ -6,6 +6,7 @@ import RPi.GPIO as GPIO
 
 
 def get_distance():
+    print("entered get distance")
     # set Trigger to HIGH
     GPIO.output(GPIO_TRIGGER, True)
  
@@ -29,7 +30,7 @@ def get_distance():
     # multiply with the sonic speed (34300 cm/s)
     # and divide by 2, because there and back
     distance = (TimeElapsed * 34300) / 2
- 
+    print("the distance returned from get_distance: " + distance)
     return distance
 
 
@@ -40,6 +41,7 @@ def monitor_distance(q):
         t0 = time.perf_counter()    # Get start time for when object enters range
 
         while distance < 5:
+            print("inside while loop in monitor_distance")
             t = time.perf_counter()     # Get current time
             distance = get_distance()   # Update distance
 
