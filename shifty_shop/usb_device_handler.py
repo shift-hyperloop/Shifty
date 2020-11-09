@@ -5,38 +5,28 @@ import time
 import RPi.GPIO as GPIO
 
 
-def get_distance():
-    #GPIO Mode (BOARD / BCM)
-    GPIO.setmode(GPIO.BCM)              # BCM mode
-     
-    #set GPIO Pins
-    GPIO_TRIGGER = 3                    # TRIGGER is connected to pin 18
-    GPIO_ECHO = 2                       # ECHO is connected to pin 24
-     
-    #set GPIO direction (IN / OUT)
-    GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
-    GPIO.setup(GPIO_ECHO, GPIO.IN)      # ECHO is set to input
+def get_distance(trigger_pin, echo_pin):
 
     # set Trigger to HIGH
-    GPIO.output(GPIO_TRIGGER, True)
+    GPIO.output(trigger_pin, True)
  
     # set Trigger after 0.01ms to LOW
     time.sleep(0.00001)
-    GPIO.output(GPIO_TRIGGER, False)
+    GPIO.output(trigger_pin, False)
  
-    StartTime = time.time()
-    StopTime = time.time()
+    startTime = time.time()
+    stopTime = time.time()
  
-    # save StartTime
-    while GPIO.input(GPIO_ECHO) == 0:
-        StartTime = time.time()
+    # save startTime
+    while GPIO.input(echo_pin) == 0:
+        startTime = time.time()
     
     # save time of arrival
-    while GPIO.input(GPIO_ECHO) == 1:
-        StopTime = time.time()
+    while GPIO.input(echo_pin) == 1:
+        stopTime = time.time()
     
     # time difference between start and arrival
-    TimeElapsed = StopTime - StartTime
+    TimeElapsed = stopTime - startTime
     # multiply with the sonic speed (34300 cm/s)
     # and divide by 2, because there and back
     distance = (TimeElapsed * 34300) / 2
@@ -45,22 +35,38 @@ def get_distance():
 
 
 def monitor_distance(q):
+
+    #GPIO Mode (BOARD / BCM)
+    GPIO.setmode(GPIO.BCM)              # BCM mode
+
+    #set GPIO Pins
+    GPIO_trigger = 3                    # TRIGGER is connected to pin 18
+    GPIO_echo = 2                       # ECHO is connected to pin 24
+
+    #set GPIO direction (IN / OUT)
+    GPIO.setup(GPIO_trigger, GPIO.OUT)  # TRIGGER is set to output
+    GPIO.setup(GPIO_echo, GPIO.IN)      # ECHO is set to input
+
     while True:
 
-        distance = get_distance()   # Get initial distance
+        distance = get_distance(GPIO_trigger, GPIO_echo)   # Get initial distance
         t0 = time.perf_counter()    # Get start time for when object enters range
 
-        while distance < 5:
-            t = time.perf_counter()     # Get current time
-            distance = get_distance()   # Update distance
+        time.sleep(0.02)
 
-            if distance >= 5:
+        while distance < 15:
+            t = time.perf_counter()     # Get current time
+            distance = get_distance(GPIO_trigger, GPIO_echo)   # Update distance
+
+            if distance >= 15:
 
                 if t-t0 > 3:                # If time held is greater than 3 seconds, delete all
                     q.put("all")
 
                 elif t-t0 > 0.5:            # If time held is greater than 0.5 seconds, delete last
                     q.put("last")
+
+            time.sleep(0.02)
 
 
 # method for grabbing and monitoring an USB device, and transferring the intercepted number sequences
@@ -85,9 +91,6 @@ def monitor_device(device_id, q):
 q_RFID = queue.SimpleQueue()        # Queue used for transferring the intercepted number sequences
 q_barcode = queue.SimpleQueue()     # Queue used for transferring the intercepted number sequences
 q_distance = queue.SimpleQueue()    # Queue for distance sensor
-
-
-
 
 
 # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
