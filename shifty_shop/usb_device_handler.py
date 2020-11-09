@@ -3,6 +3,7 @@ import threading
 import queue
 import time
 import RPi.GPIO as GPIO
+import sys
 
 
 def get_distance(trigger_pin, echo_pin):
@@ -101,11 +102,14 @@ distance_sensor = threading.Thread(target=monitor_distance, args=(q_distance,), 
 
 if __name__ == '__main__':                      # Only if this script is run directly
 
-    while True:
-        if q_RFID.qsize():
-            print('RFID: ' + str(q_RFID.get()))
-        if q_barcode.qsize():
-            print('Barcode ID: ' + str(q_barcode.get()))
-        if q_distance.qsize():
-            print('Distance message: ' + str(q_distance.get()))
-        time.sleep(0.05)
+    try:
+        while True:
+            if q_RFID.qsize():
+                print('RFID: ' + str(q_RFID.get()))
+            if q_barcode.qsize():
+                print('Barcode ID: ' + str(q_barcode.get()))
+            if q_distance.qsize():
+                print('Distance message: ' + str(q_distance.get()))
+            time.sleep(0.05)
+    except:
+        GPIO.cleanup()
