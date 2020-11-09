@@ -11,7 +11,7 @@ def get_distance():
      
     #set GPIO Pins
     GPIO_TRIGGER = 18                   # TRIGGER is connected to pin 18
-    GPIO_ECHO = 24                      # ECHO is connected to pin 24
+    GPIO_ECHO = 16                      # ECHO is connected to pin 24
      
     #set GPIO direction (IN / OUT)
     GPIO.setup(GPIO_TRIGGER, GPIO.OUT)  # TRIGGER is set to output
@@ -22,7 +22,7 @@ def get_distance():
     GPIO.output(GPIO_TRIGGER, True)
  
     # set Trigger after 0.01ms to LOW
-    time.sleep(0.00002)
+    time.sleep(0.00001)
     GPIO.output(GPIO_TRIGGER, False)
  
     StartTime = time.time()
