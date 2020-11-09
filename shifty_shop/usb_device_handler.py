@@ -53,7 +53,7 @@ def monitor_distance(q):
         distance = get_distance(GPIO_trigger, GPIO_echo)   # Get initial distance
         t0 = time.perf_counter()    # Get start time for when object enters range
 
-        time.sleep(0.02)
+        time.sleep(0.01)
 
         while distance < 15:
             t = time.perf_counter()     # Get current time
@@ -61,13 +61,13 @@ def monitor_distance(q):
 
             if distance >= 15:
 
-                if t-t0 > 3:                # If time held is greater than 3 seconds, delete all
+                if t-t0 > 0.5:                # If time held is greater than 3 seconds, delete all
                     q.put("all")
 
-                elif t-t0 > 0.5:            # If time held is greater than 0.5 seconds, delete last
+                elif t-t0 > 0.1:            # If time held is greater than 0.5 seconds, delete last
                     q.put("last")
 
-            time.sleep(0.02)
+            time.sleep(0.01)
 
 
 # method for grabbing and monitoring an USB device, and transferring the intercepted number sequences
