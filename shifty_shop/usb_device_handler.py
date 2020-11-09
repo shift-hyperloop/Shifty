@@ -90,8 +90,8 @@ GPIO.output(GPIO_TRIGGER, False)    # Setting Trigger to False for redundancy
 
 
 # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
-RFID = threading.Thread(target=monitor_device, args=('/dev/input/event0', q_RFID), daemon=True).start()
-barcode = threading.Thread(target=monitor_device, args=('/dev/input/event1', q_barcode), daemon=True).start()
+RFID = threading.Thread(target=monitor_device, args=('/dev/input/event3', q_RFID), daemon=True).start()
+barcode = threading.Thread(target=monitor_device, args=('/dev/input/event2', q_barcode), daemon=True).start()
 distance_sensor = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start()
 
 
