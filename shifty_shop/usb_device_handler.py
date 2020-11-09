@@ -61,12 +61,11 @@ def monitor_distance(q):
 
             if distance >= 15:
 
-                # if t-t0 > 0.5:                # If time held is greater than 3 seconds, delete all
-                #     q.put("all")
-                #
-                # elif t-t0 > 0.1:            # If time held is greater than 0.5 seconds, delete last
-                #     q.put("last")
-                q.put(str(t-t0))
+                if t-t0 > 0.5:                # If time held is greater than 3 seconds, delete all
+                    q.put("all")
+
+                elif t-t0 > 0.1:            # If time held is greater than 0.5 seconds, delete last
+                    q.put("last")
 
             time.sleep(0.05)
 
