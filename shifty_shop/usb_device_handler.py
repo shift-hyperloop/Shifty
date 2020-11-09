@@ -4,7 +4,7 @@ import queue
 
 
 # method for grabbing and monitoring an USB device, and transferring the intercepted number sequences
-def monitor_device(device_id):
+def monitor_device(device_id, q):
     device = evdev.InputDevice(device_id)   # Creates the device object
     device.grab()                           # Occupies the device and blocks it from being a keyboard
     scanned_chars = []
@@ -17,16 +17,17 @@ def monitor_device(device_id):
             if len(scanned_chars) > 1:                                           # If the list isn't empty
                 if scanned_chars[-2] == 'ENTER':                                 # Looks for 2 consecutive ENTER presses
                     scanned_string = "".join([x for x in scanned_chars[:-2:2]])  # Concatenate every 2 number into str
-                    q.put([str(device.name), scanned_string])                    # Puts dev name and num seq. into queue
+                    q.put(scanned_string)                    # Puts dev name and num seq. into queue
                     print(str(device.name) + ' did stuff.\n')                    # TODO: delete after debugging
                     scanned_chars = []                                           # Resets variable
 
 
-q = queue.SimpleQueue()     # Queue used for transferring the intercepted number sequences
+q_RFID = queue.SimpleQueue()        # Queue used for transferring the intercepted number sequences
+q_barcode = queue.SimpleQueue()     # Queue used for transferring the intercepted number sequences
 
 # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
-RFID = threading.Thread(target=monitor_device, args=('/dev/input/event5',), daemon=True).start()
-barcode = threading.Thread(target=monitor_device, args=('/dev/input/event6',), daemon=True).start()
+RFID = threading.Thread(target=monitor_device, args=('/dev/input/event5', q_RFID), daemon=True).start()
+barcode = threading.Thread(target=monitor_device, args=('/dev/input/event6', q_barcode), daemon=True).start()
 
 
 if __name__ == '__main__':                      # Only if this script is run directly
@@ -41,12 +42,12 @@ if __name__ == '__main__':                      # Only if this script is run dir
 
         elif inp == '':
             tilt = 0
-            if q.empty():
-                print('Queue is empty.')
-            else:
-                device_name, num_seq = [item for item in q.get()]
-                print('Device: ' + str(device_name))
-                print('Sequence: ' + str(num_seq))
+            if q_RFID.qsize():
+                print('RFID: ' + str(q_RFID.get()))
+            elif q_barcode.qsize():
+                print('Barcode ID: ' + str(q_barcode.get()))
+            elif q_RFID.empty() and q_barcode.empty():
+                print('Queues are empty.')
 
         elif inp:
             tilt += 1
