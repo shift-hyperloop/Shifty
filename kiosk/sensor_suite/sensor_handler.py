@@ -73,12 +73,9 @@ def monitor_distance(q):
 def find_USB_devices():
 
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
-
-    device_paths = {"RFID_path":False, "barcode_path":False}
-
+    device_paths = {"RFID_device_path":False, "barcode_device_path":False}
     for device in devices:
         name = device.name
-
         if name.startswith('Sycreader'):
             device_paths["RFID_device_path"] = device.path
         elif name.startswith('SZ World'):
