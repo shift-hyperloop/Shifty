@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 RFID = threading.Thread(target=monitor_device, args=('/dev/input/event3', q_RFID), daemon=True).start()
 barcode = threading.Thread(target=monitor_device, args=('/dev/input/event2', q_barcode), daemon=True).start()
 distance_sensor = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start()
-web_server = threading.Thread(target=start_web_server, args=(,), deamon=True).start()
+web_server = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
 
 if __name__ == '__main__':                      # Only if this script is run directly
