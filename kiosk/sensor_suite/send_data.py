@@ -3,8 +3,9 @@ from flask import Flask
 def setup_web_server():
 
 	app = Flask(__name__)
+
 	@app.route('/RFID')
-	def rfid_get():
+	def rfid_get(q_rfid):
 		if q_rfid.qsize():
 			message = q_rfid.get()
 			print(message)
@@ -13,7 +14,7 @@ def setup_web_server():
 			return "nothing new!"
 
 	@app.route('/barcode')
-	def barcode_get():
+	def barcode_get(q):
 		if q_barcode.qsize():
 			message = q_barcode.get()
 			print(message)

@@ -1,5 +1,5 @@
 from sensor_handler import *
-from send_data import setup_web_server
+from flask import Flask
 import threading
 import RPi.GPIO as GPIO
 import queue
@@ -16,6 +16,39 @@ if __name__ == '__main__':                      # Only if this script is run dir
     RFID_device_path = devices['RFID_device_path']
     barcode_device_path = devices['barcode_device_path']
 
+
+    app = Flask(__name__)
+
+    @app.route('/RFID')
+    def rfid_get(q_rfid):
+        if q_rfid.qsize():
+            message = q_rfid.get()
+            print(message)
+            return message
+        else:
+            return "nothing new!"
+
+
+    @app.route('/barcode')
+    def barcode_get(q):
+        if q_barcode.qsize():
+            message = q_barcode.get()
+            print(message)
+            return message
+        else:
+            return "nothing new!"
+
+
+    @app.route('/distance')
+    def distance_get():
+        if q_distance.qsize():
+            message = q_distance.get()
+            print(message)
+            return message
+        else:
+            return "nothing new!"
+
+
     # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
     if RFID_device_path:
         rfid_scanner_thread = threading.Thread(target=monitor_device, args=(RFID_device_path, q_rfid), daemon=True).start()
@@ -31,7 +64,6 @@ if __name__ == '__main__':                      # Only if this script is run dir
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
     try:
-        app = setup_web_server()
         app.run(debug=True, host='0.0.0.0')
         while True:
             time.sleep(1)
