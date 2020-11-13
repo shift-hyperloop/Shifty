@@ -24,5 +24,6 @@ def distance():
 	else:
 		return "nothing new!"
 
-if __name__ == '__send_data__':
-    app.run(debug=True, host='0.0.0.0')
+def start_web_server():
+	app.run(debug=True, host='0.0.0.0')
+
