@@ -1,9 +1,6 @@
 import evdev
-import threading
-import queue
 import time
 import RPi.GPIO as GPIO
-
 
 
 def get_distance(trigger_pin, echo_pin):
@@ -73,6 +70,23 @@ def monitor_distance(q):
             time.sleep(0.05)
 
 
+def find_USB_devices():
+
+    devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+
+    device_paths = {"RFID_path":False, "barcode_path":False}
+
+    for device in devices:
+        name = device.name
+
+        if name.startswith('Sycreader'):
+            device_paths["RFID_device_path"] = device.path
+        elif name.startswith('SZ World'):
+            device_paths["barcode_device_path"] = device.path
+
+    return device_paths
+
+
 # method for grabbing and monitoring an USB device, and transferring the intercepted number sequences
 def monitor_device(device_id, q):
     device = evdev.InputDevice(device_id)   # Creates the device object
@@ -87,11 +101,5 @@ def monitor_device(device_id, q):
             if len(scanned_chars) > 1:                                           # If the list isn't empty
                 if scanned_chars[-2] == 'ENTER':                                 # Looks for 2 consecutive ENTER presses
                     scanned_string = "".join([x for x in scanned_chars[:-2:2]])  # Concatenate every 2 number into str
-                    q.put(scanned_string)                    # Puts dev name and num seq. into queue
+                    q.put(scanned_string)                                        # Puts dev name and num seq. into queue
                     scanned_chars = []                                           # Resets variable
-
-
-#Defining global objects
-q_RFID = queue.SimpleQueue()        # Queue used for transferring the intercepted number sequences
-q_barcode = queue.SimpleQueue()     # Queue used for transferring the intercepted number sequences
-q_distance = queue.SimpleQueue()    # Queue for distance sensor

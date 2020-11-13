@@ -1,29 +1,33 @@
 from flask import Flask
-#from usb_device_handler import q_RFID, q_barcode, q_distance
 
 app = Flask(__name__)
 
 @app.route('/RFID')
-def RFID():
-	if q_RFID.qsize():
-	    return q_RFID.get()
+def rfid_get():
+	if q_rfid.qsize():
+		message = q_rfid.get()
+		print(message)
+		return message
 	else:
 		return "nothing new!"
 	
 @app.route('/barcode')
-def barcode():
+def barcode_get():
 	if q_barcode.qsize():
-		return q_barcode.get()
+		message = q_barcode.get()
+		print(message)
+		return message
 	else:
 		return "nothing new!"
 
 @app.route('/distance')
-def distance():
+def distance_get():
 	if q_distance.qsize():
-		return q_distance.get()
+		message = q_distance.get()
+		print(message)
+		return message
 	else:
 		return "nothing new!"
 
 def start_web_server():
 	app.run(debug=True, host='0.0.0.0')
-
