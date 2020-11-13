@@ -1,8 +1,9 @@
 from sensor_handler import *
-from send_data import start_web_server
+from send_data import setup_web_server
 import threading
 import RPi.GPIO as GPIO
 import queue
+import time
 
 
 if __name__ == '__main__':                      # Only if this script is run directly
@@ -30,7 +31,10 @@ if __name__ == '__main__':                      # Only if this script is run dir
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
     try:
-        start_web_server()
+        app = setup_web_server
+        app.run(debug=True, host='0.0.0.0')
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
         pass
     except Exception as e:
