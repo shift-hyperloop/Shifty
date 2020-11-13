@@ -5,7 +5,7 @@ def setup_web_server():
 	app = Flask(__name__)
 
 	@app.route('/RFID')
-	def rfid_get(q_rfid):
+	def rfid_get():
 		if q_rfid.qsize():
 			message = q_rfid.get()
 			print(message)
@@ -14,7 +14,7 @@ def setup_web_server():
 			return "nothing new!"
 
 	@app.route('/barcode')
-	def barcode_get(q):
+	def barcode_get():
 		if q_barcode.qsize():
 			message = q_barcode.get()
 			print(message)
