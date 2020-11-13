@@ -31,7 +31,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
     try:
-        app = setup_web_server
+        app = setup_web_server()
         app.run(debug=True, host='0.0.0.0')
         while True:
             time.sleep(1)
