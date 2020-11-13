@@ -3,7 +3,6 @@ import threading
 import queue
 import time
 import RPi.GPIO as GPIO
-import sys
 from flask import Flask
 
 
