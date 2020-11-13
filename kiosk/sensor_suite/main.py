@@ -1,7 +1,6 @@
 from sensor_handler import *
 from send_data import start_web_server
 import threading
-import time
 import RPi.GPIO as GPIO
 import queue
 
@@ -28,12 +27,10 @@ if __name__ == '__main__':                      # Only if this script is run dir
         print('Warning! No barcode scanner device found!')
 
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
-    web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
+    #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
     try:
-        while True:
-            time.sleep(31536000) # one year
-            # TODO ring a bell
+        start_web_server()
     except KeyboardInterrupt:
         pass
     except Exception as e:
