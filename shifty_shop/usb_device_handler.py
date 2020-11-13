@@ -4,6 +4,8 @@ import queue
 import time
 import RPi.GPIO as GPIO
 import sys
+from flask import Flask
+
 
 
 def get_distance(trigger_pin, echo_pin):
@@ -104,7 +106,8 @@ distance_sensor = threading.Thread(target=monitor_distance, args=(q_distance,), 
 
 
 if __name__ == '__main__':                      # Only if this script is run directly
-
+    import send_data
+    
     try:
         while True:
             if q_RFID.qsize():

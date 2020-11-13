@@ -13,9 +13,9 @@ q_distance = queue.SimpleQueue()
 
 
 def threadfunc(q):
-    time.sleep(3)
-    q.put('Cola')
-    time.sleep(6)
+    time.sleep(0.5)
+    q.put('test')
+    time.sleep(0.5)
     q.put('Pepsi')
     time.sleep(0.5)
     q.put('Beer')
@@ -70,7 +70,7 @@ def run():
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    threading.Thread(target=threadfunc, args=(q_barcode,), daemon=True).start()
+    #threading.Thread(target=threadfunc, args=(q_barcode,), daemon=True).start()
 
     timer = QtCore.QTimer(interval=200)
     timer.timeout.connect(partial(check_inputs, myEngine))
