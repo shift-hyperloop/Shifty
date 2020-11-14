@@ -38,7 +38,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     app = Flask("send_data")
 
     try:
-        app.run(debug=True, host='0.0.0.0')
+        app.run(debug=False, host='0.0.0.0')
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
