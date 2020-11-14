@@ -50,15 +50,19 @@ if __name__ == '__main__':                      # Only if this script is run dir
 
 
     # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
-    if RFID_device_path:
-        rfid_scanner_thread = threading.Thread(target=monitor_device, args=(RFID_device_path, q_rfid), daemon=True).start()
-    else:
-        print('Warning! No RFID scanner device found!')
+    # if RFID_device_path:
+    #     rfid_scanner_thread = threading.Thread(target=monitor_device, args=(RFID_device_path, q_rfid), daemon=True).start()
+    # else:
+    #     print('Warning! No RFID scanner device found!')
+    #
+    # if barcode_device_path:
+    #     barcode_scanner_thread = threading.Thread(target=monitor_device, args=(barcode_device_path, q_barcode), daemon=True).start()
+    # else:
+    #     print('Warning! No barcode scanner device found!')
 
-    if barcode_device_path:
-        barcode_scanner_thread = threading.Thread(target=monitor_device, args=(barcode_device_path, q_barcode), daemon=True).start()
-    else:
-        print('Warning! No barcode scanner device found!')
+    # for testing
+    rfid_scanner_thread = threading.Thread(target=monitor_device, args=("/dev/devices/input2", q_rfid), daemon=True).start()
+    barcode_scanner_thread = threading.Thread(target=monitor_device, args=("/dev/devices/input1", q_barcode), daemon=True).start()
 
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
