@@ -1,5 +1,4 @@
 from sensor_handler import *
-#import send_data
 from flask import Flask
 import threading
 import RPi.GPIO as GPIO
@@ -34,7 +33,6 @@ if __name__ == '__main__':                      # Only if this script is run dir
     time.sleep(5)
 
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
-    #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
     app = Flask(__name__)
 
