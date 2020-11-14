@@ -11,7 +11,7 @@ q_barcode = queue.SimpleQueue()  # Queue used for transferring the intercepted n
 q_distance = queue.SimpleQueue()  # Queue for distance sensor
 
 if __name__ == '__main__':                      # Only if this script is run directly
- 
+    app.run(debug=True, host='0.0.0.0')
 
     #devices = find_USB_devices()
     #RFID_device_path = devices['RFID_device_path']
@@ -39,7 +39,6 @@ if __name__ == '__main__':                      # Only if this script is run dir
 
 
     try:
-        app.run(debug=True, host='0.0.0.0')
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
