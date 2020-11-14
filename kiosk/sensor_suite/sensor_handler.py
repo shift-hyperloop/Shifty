@@ -86,9 +86,8 @@ def find_USB_devices():
 
 # method for grabbing and monitoring an USB device, and transferring the intercepted number sequences
 def monitor_device(device_path, q):
-    device = evdev.InputDevice(device_path)   # Creates the device object
-    time.sleep(1)
-    device.grab()                           # Occupies the device and blocks it from being a keyboard
+    device = evdev.InputDevice(device_path)     # Creates the device object
+    device.grab()                               # Occupies the device and blocks it from being a keyboard
     scanned_chars = []
     
     for event in device.read_loop():
