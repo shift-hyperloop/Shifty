@@ -1,5 +1,4 @@
 from sensor_handler import *
-import send_data
 from flask import Flask
 import threading
 import RPi.GPIO as GPIO
