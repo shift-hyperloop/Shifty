@@ -16,8 +16,8 @@ if __name__ == '__main__':                      # Only if this script is run dir
     #RFID_device_path = devices['RFID_device_path']
     #barcode_device_path = devices['barcode_device_path']
 
-    RFID_device_path = "/dev/input/event2"
-    barcode_device_path = "/dev/input/event1"
+    RFID_device_path = r"/dev/input/event2"
+    barcode_device_path = r"/dev/input/event1"
 
 
     # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
@@ -25,11 +25,13 @@ if __name__ == '__main__':                      # Only if this script is run dir
         rfid_scanner_thread = threading.Thread(target=monitor_device, args=(RFID_device_path, q_rfid), daemon=True).start()
     else:
         print('Warning! No RFID scanner device found!')
+    time.sleep(2)
 
     if barcode_device_path:
         barcode_scanner_thread = threading.Thread(target=monitor_device, args=(barcode_device_path, q_barcode), daemon=True).start()
     else:
         print('Warning! No barcode scanner device found!')
+    time.sleep(2)
 
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
