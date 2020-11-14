@@ -1,17 +1,16 @@
+from sensor_handler import *
+import send_data
+from flask import Flask
 import threading
 import RPi.GPIO as GPIO
 import queue
 import time
-from sensor_handler import *
-from send_data import *
 
-
-q_rfid = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
-q_barcode = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
-q_distance = queue.SimpleQueue()  # Queue for distance sensor
 
 if __name__ == '__main__':                      # Only if this script is run directly
-    app.run(debug=True, host='0.0.0.0')
+    q_rfid = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
+    q_barcode = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
+    q_distance = queue.SimpleQueue()  # Queue for distance sensor
 
     #devices = find_USB_devices()
     #RFID_device_path = devices['RFID_device_path']
@@ -37,8 +36,10 @@ if __name__ == '__main__':                      # Only if this script is run dir
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
+    app = Flask("send_data")
 
     try:
+        app.run(debug=True, host='0.0.0.0')
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
