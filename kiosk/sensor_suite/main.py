@@ -1,4 +1,3 @@
-from flask import Flask
 import threading
 import RPi.GPIO as GPIO
 import queue
