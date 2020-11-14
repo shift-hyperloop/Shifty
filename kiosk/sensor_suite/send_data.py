@@ -1,3 +1,5 @@
+app = Flask(__name__)
+
 @app.route('/RFID')
 def rfid_get():
 	if q_rfid.qsize():
@@ -24,3 +26,4 @@ def distance_get():
 		return message
 	else:
 		return "nothing new!"
+
