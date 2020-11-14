@@ -36,6 +36,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
     #web_server_thread = threading.Thread(target=start_web_server, args=(), daemon=True).start()
 
+    app = Flask(__name__)
 
     @app.route('/RFID')
     def rfid_get():
@@ -66,7 +67,6 @@ if __name__ == '__main__':                      # Only if this script is run dir
         else:
             return "nothing new!"
 
-    app = Flask(__name__)
 
     try:
         app.run(debug=False, host='0.0.0.0')
