@@ -1,10 +1,11 @@
-from sensor_handler import *
-from send_data import *
 from flask import Flask
 import threading
 import RPi.GPIO as GPIO
 import queue
 import time
+from sensor_handler import *
+from send_data import *
+
 
 q_rfid = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
 q_barcode = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
