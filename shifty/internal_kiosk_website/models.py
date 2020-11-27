@@ -6,7 +6,7 @@ class Products(models.Model):
 	barcode = models.CharField(max_length=100)
 	price   = models.IntegerField()
 	amount  = models.IntegerField()
-	objects = models.Manager()
+	object = models.Manager()
 
 	class Meta:
 		verbose_name_plural = "products"

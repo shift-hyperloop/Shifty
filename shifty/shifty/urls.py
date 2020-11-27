@@ -28,4 +28,6 @@ urlpatterns = [
     path('rfid', RFIDView.rfid_endpoint, name='rfid'),
     path('',include("internal_kiosk_website.urls")),
     path('testing/',include("testing.urls")),
+    path('user_request',include('user_request.urls')),
+    path('product_request',include('product_request.urls')),
 ]

@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'doorbell.apps.DoorbellConfig',
     "internal_kiosk_website",
     'testing',
+    "product_request",
+    "user_request",
 ]
 
 MIDDLEWARE = [

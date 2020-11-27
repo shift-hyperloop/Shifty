@@ -19,7 +19,10 @@ class RFIDUser(models.Model):
     phone_mnumber = models.CharField(max_length=18)
     email = models.CharField(max_length=100)
     rfid = models.CharField(max_length=30)
-    kiosk_balance = models.IntegerField(max_length=9)
+    kiosk_balance = models.IntegerField()
+    object = models.Manager()
+    class Meta:
+        verbose_name_plural = "users"
 
     def __str__(self):
         return f'{self.given_name} {self.family_name}'
