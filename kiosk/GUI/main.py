@@ -2,25 +2,12 @@ import sys
 import os
 from PyQt5 import QtCore, QtGui, QtQml
 from functools import partial
-import time
 import queue
-import threading
-import random
 import requests
 from post_request_test import request_product, request_user
 
-q_RFID = queue.SimpleQueue()
-q_barcode = queue.SimpleQueue()
-q_distance = queue.SimpleQueue()
 
-
-def barcode_fetcher(q):
-    url = "http://192.168.1.132:5000/barcode"
-    r = requests.get(url=url)
-    data = r.content.decode("utf-8")
-    if data != "nothing new!":
-        q.put(data)
-        time.sleep(0.01)
+shopping_list_q = queue.SimpleQueue()
 
 
 def mainWindow_setup(w):
@@ -54,7 +41,7 @@ def add_product(product, engine):
     price_string.insert(0, new_prices)
 
 
-def check_inputs(engine):
+def check_inputs(engine, shopping_list):
     # Check for barcode input
     r = requests.get(url="http://192.168.1.132:5000/barcode")
     data = r.content.decode("utf-8")
@@ -62,23 +49,46 @@ def check_inputs(engine):
         product = request_product(data)
         if len(product) > 1:
             add_product(product, engine)
+            shopping_list.put(product)
         else:
             add_product(["SEEK HELP","420","0"], engine) # TODO
 
     # Check for RFID input
     r = requests.get(url="http://192.168.1.132:5000/RFID")
     data = r.content.decode("utf-8")
-    if data != "nothing new!":
-        user = request_user(data)
-        if len(user) > 1:
-            # TODO: actually purchase stuff
 
+    if data != "nothing new!":
+        shopped_items = []
+        loops = 0
+        while shopping_list.qsize():
+            shopped_items.append(shopping_list.get())
+        for item in shopped_items:
+            loops += int(item[1])
+
+        user = request_user(data, amount_used=loops)
+        if len(user) > 1:
             # Find product and price string in QML, and clear all the entries
             mainWindow = engine.rootObjects()[0]
             mainWindow.findChild(QtCore.QObject, "productString").clear()
             mainWindow.findChild(QtCore.QObject, "priceString").clear()
         else:
             add_product(["SEEK HELP",str(user[0]),"0"], engine) # TODO what to do if no user found?
+            for item in shopped_items:
+                shopping_list.put(item)
+
+    # Check for distance sensor stuff
+    r = requests.get(url="http://192.168.1.132:5000/distance")
+    data = r.content.decode("utf-8")
+    if data != "nothing new!":
+        if data == "del_last":
+            pass
+        elif data == "del_all":
+            # Find product and price string in QML, and clear all the entries
+            mainWindow = engine.rootObjects()[0]
+            mainWindow.findChild(QtCore.QObject, "productString").clear()
+            mainWindow.findChild(QtCore.QObject, "priceString").clear()
+        elif data == "easter_egg":
+            pass
 
 
 def run():
@@ -87,13 +97,10 @@ def run():
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    threading.Thread(target=barcode_fetcher, args=(q_barcode,), daemon=True).start()
-
-    timer = QtCore.QTimer(interval=200)
-    timer.timeout.connect(partial(check_inputs, myEngine))
+    timer = QtCore.QTimer(interval=100)
+    timer.timeout.connect(partial(check_inputs, myEngine, shopping_list_q))
     timer.start()
     return app.exec_()
-
 
 if __name__ == "__main__":
     sys.exit(run())
