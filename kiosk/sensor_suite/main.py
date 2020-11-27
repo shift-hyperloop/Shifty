@@ -39,9 +39,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     @app.route('/RFID')
     def rfid_get():
         if q_rfid.qsize():
-            message = q_rfid.get()
-            print(message)
-            return message
+            return q_rfid.get()
         else:
             return "nothing new!"
 
@@ -49,9 +47,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     @app.route('/barcode')
     def barcode_get():
         if q_barcode.qsize():
-            message = q_barcode.get()
-            print(message)
-            return message
+            return q_barcode.get()
         else:
             return "nothing new!"
 
@@ -59,9 +55,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     @app.route('/distance')
     def distance_get():
         if q_distance.qsize():
-            message = q_distance.get()
-            print(message)
-            return message
+            return q_distance.get()
         else:
             return "nothing new!"
 
