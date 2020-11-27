@@ -6,21 +6,21 @@ import time
 import queue
 import threading
 import random
+import requests
+from post_request_test import request_product, request_user
 
 q_RFID = queue.SimpleQueue()
 q_barcode = queue.SimpleQueue()
 q_distance = queue.SimpleQueue()
 
 
-def threadfunc(q):
-    time.sleep(0.5)
-    q.put('test')
-    time.sleep(0.5)
-    q.put('Pepsi')
-    time.sleep(0.5)
-    q.put('Beer')
-    time.sleep(0.5)
-    q.put('Hookers')
+def barcode_fetcher(q):
+    url = "http://192.168.1.132:5000/barcode"
+    r = requests.get(url=url)
+    data = r.content.decode("utf-8")
+    if data != "nothing new!":
+        q.put(data)
+        time.sleep(0.01)
 
 
 def mainWindow_setup(w):
@@ -28,7 +28,7 @@ def mainWindow_setup(w):
     w.setTitle("ShiftKiosk")
 
 
-def add_product(barcode, engine):
+def add_product(product, engine):
     # Check if window still open
     if not engine.rootObjects():
         return -1
@@ -39,38 +39,55 @@ def add_product(barcode, engine):
     price_string = mainWindow.findChild(QtCore.QObject, "priceString")
 
     # Find product name and price to be added
-    product_name = "Red Knull"
-    product_price = "69 (neida egt 17) kr"
+    product_name = product[0]
+    product_price = product[1]
+    product_stock = product[2]
 
     # Get current product string, clear and update
-    new_products = product_string.property("text") + barcode + "\n"
+    new_products = product_string.property("text") + product_name + "\n"
     product_string.clear()
     product_string.insert(0, new_products)
 
     # Get current price string, clear and update
-    new_prices = price_string.property("text") + str(random.randint(10,1000)) + "\n"
+    new_prices = price_string.property("text") + product_price + "\n"
     price_string.clear()
     price_string.insert(0, new_prices)
 
 
 def check_inputs(engine):
-    if q_RFID.qsize():
-        pass
+    # Check for barcode input
+    r = requests.get(url="http://192.168.1.132:5000/barcode")
+    data = r.content.decode("utf-8")
+    if data != "nothing new!":
+        product = request_product(data)
+        if len(product) > 1:
+            add_product(product, engine)
+        else:
+            add_product(["SEEK HELP","420","0"], engine) # TODO
 
-    if q_barcode.qsize():
-        add_product(q_barcode.get(), engine)
+    # Check for RFID input
+    r = requests.get(url="http://192.168.1.132:5000/RFID")
+    data = r.content.decode("utf-8")
+    if data != "nothing new!":
+        user = request_user(data)
+        if len(user) > 1:
+            # TODO: actually purchase stuff
 
-    if q_distance.qsize():
-        pass
+            # Find product and price string in QML, and clear all the entries
+            mainWindow = engine.rootObjects()[0]
+            mainWindow.findChild(QtCore.QObject, "productString").clear()
+            mainWindow.findChild(QtCore.QObject, "priceString").clear()
+        else:
+            add_product(["SEEK HELP",str(user[0]),"0"], engine) # TODO what to do if no user found?
 
- 
+
 def run():
     app = QtGui.QGuiApplication(sys.argv)
     myEngine = QtQml.QQmlApplicationEngine()
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    #threading.Thread(target=threadfunc, args=(q_barcode,), daemon=True).start()
+    threading.Thread(target=barcode_fetcher, args=(q_barcode,), daemon=True).start()
 
     timer = QtCore.QTimer(interval=200)
     timer.timeout.connect(partial(check_inputs, myEngine))

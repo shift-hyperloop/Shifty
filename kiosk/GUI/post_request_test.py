@@ -3,7 +3,7 @@ import requests
 
 def request_user(rfid, amount_used=0, key="elonsmusk"):
 
-    url = "http://127.0.0.1:8000/user_request"
+    url = "http://shifthyperloop01.it.ntnu.no:8079/user_request"
 
     return requests.get(f"{url}?rfid={rfid}&loops_used={amount_used}&key={key}").text.split(",")
 
@@ -17,7 +17,7 @@ def request_user(rfid, amount_used=0, key="elonsmusk"):
 
 def request_product(barcode, bought=0, key = "elonsmusk"):
 
-    url = "http://127.0.0.1:8000/product_request"
+    url = "http://shifthyperloop01.it.ntnu.no:8079/product_request"
 
     return requests.get(f"{url}?barcode={barcode}&key={key}&bought={bought}").text.split(",")
 
