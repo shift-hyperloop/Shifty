@@ -15,8 +15,8 @@ if __name__ == '__main__':                      # Only if this script is run dir
     #RFID_device_path = devices['RFID_device_path']
     #barcode_device_path = devices['barcode_device_path']
 
-    RFID_device_path = r"/dev/input/event2"
-    barcode_device_path = r"/dev/input/event1"
+    RFID_device_path = r"/dev/input/event1"
+    barcode_device_path = r"/dev/input/event0"
 
 
     # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
