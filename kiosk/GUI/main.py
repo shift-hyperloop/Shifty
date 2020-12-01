@@ -45,6 +45,11 @@ def add_product(product, engine):
     product_price = product[2]
     product_stock = product[3]
 
+    print(product_barcode)
+    print(product_name)
+    print(product_price)
+    print(product_stock)
+
     # Get current product string, clear and update
     new_products = product_string.property("text") + product_name + "\n"
     product_string.clear()
@@ -60,15 +65,15 @@ def checkBarcodeQueue(engine, q_cart):
 
     while True:
 
-        data = requests.get(url="http://192.168.1.132:5000/barcode").content.decode("utf-8")
+        barcode = requests.get(url="http://192.168.1.132:5000/barcode").content.decode("utf-8")
 
         # If there are no more barcodes in the queue, let function complete
-        if data == "nothing new!":
+        if barcode == "nothing new!":
             break
 
         # If queue is not empty, add a product to the shopping basket
         else:
-            product = list(data) + request_product(data)
+            product = list(barcode) + request_product(barcode)
             if len(product) > 2:
                 add_product(product, engine)
                 q_cart.put(product)
