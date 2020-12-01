@@ -25,7 +25,7 @@ def enter_idle_screen(engine):
 
 def exit_idle_screen(engine):
     engine.rootObjects()[0].findChild(QtCore.QObject, "userstring").clear()
-    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Total:")
+
 
 def add_product(product, engine):
     # Check if window still open
@@ -37,7 +37,7 @@ def add_product(product, engine):
     product_string = mainWindow.findChild(QtCore.QObject, "productString")
     price_string = mainWindow.findChild(QtCore.QObject, "priceString")
     total = mainWindow.findChild(QtCore.QObject, "totalstring")
-
+    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Total:")
 
     # Find product name and price to be added
     product_barcode = product[0]
