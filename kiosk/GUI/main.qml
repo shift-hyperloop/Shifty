@@ -50,8 +50,6 @@ Window {
                 font.pointSize: 18
                 objectName: "productString"
             }
-
-
         }
 
         Column {
@@ -92,11 +90,8 @@ Window {
             text: ""
             font.pixelSize: 12
         }
-
-
-        }
     }
-
+}
 
 
 /*##^##

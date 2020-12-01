@@ -158,8 +158,8 @@ def mainLoop(engine, q_cart):
     checkDistanceQueue(engine, q_cart)
 
     mainWindow = engine.rootObjects()[0]
-    price_string = mainWindow.findChild(QtCore.QObject, "pricestring").property("text")
-    if price_string:
+    if mainWindow.findChild(QtCore.QObject, "pricestring"):
+        price_string = mainWindow.findChild(QtCore.QObject, "pricestring").property("text")
         total_price_string = sum([int(x) for x in price_string.strip("\n").split("\n")]) # Splits string by "\n" into list, takes sum of list elements
         mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(total_price_string)
 
