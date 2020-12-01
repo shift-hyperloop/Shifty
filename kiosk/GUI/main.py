@@ -14,6 +14,17 @@ def mainWindow_setup(w):
 
     w.setTitle("ShiftKiosk")
 
+def enter_idle_screen(engine):
+    mainWindow = engine.rootObjects()[0]
+    mainWindow.findChild(QtCore.QObject, "productString").clear()
+    mainWindow.findChild(QtCore.QObject, "priceString").clear()
+    mainWindow.findChild(QtCore.QObject, "totalstring").clear()
+    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Scan a card or product to get started!")
+
+
+def exit_idle_screen(engine):
+    engine.rootObjects()[0].findChild(QtCore.QObject, "userstring").clear()
+
 
 def add_product(product, engine):
     # Check if window still open
@@ -42,14 +53,6 @@ def add_product(product, engine):
     new_prices = price_string.property("text") + product_price + ",-\n"
     price_string.clear()
     price_string.insert(0, new_prices)
-
-    # sum of prices
-    prevsum = total.property("text")
-    prevsum = prevsum.strip(",-")
-    prevsum = int(prevsum)
-    total.clear()
-    newsum = prevsum + int(product_price)
-    total.insert(0, newsum)
 
 
 def checkBarcodeQueue(engine, q_cart):
@@ -154,10 +157,15 @@ def mainLoop(engine, q_cart):
 
     checkDistanceQueue(engine, q_cart)
 
+    mainWindow = engine.rootObjects()[0]
+    total_price_string = mainWindow.findChild(QtCore.QObject, "totalpricestring").property("text")
+    total_price_string.clear()
+    total_price_string.insert(sum([int(x) for x in price_string.strip("\n").split("\n")]))
+
 
 def run():
     app = QtGui.QGuiApplication(sys.argv)
-    myEngine = QtQml.QQmlApplicationEngine()
+    myEngine = QtQml.QQmlApplicationEngine(parent=app)
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
