@@ -44,10 +44,6 @@ def add_product(product, engine):
     product_price = product[2]
     product_stock = product[3]
 
-    with open('log.txt', "a") as myfile:
-        for item in product:
-            myfile.write(item + "\n")
-
     # Get current product string, clear and update
     new_products = product_string.property("text") + product_name + "\n"
     product_string.clear()
@@ -71,7 +67,7 @@ def checkBarcodeQueue(engine, q_cart):
 
         # If queue is not empty, add a product to the shopping basket
         else:
-            product = list(barcode) + request_product(barcode)
+            product = [barcode] + request_product(barcode)
             if len(product) > 2:
                 add_product(product, engine)
                 q_cart.put(product)
