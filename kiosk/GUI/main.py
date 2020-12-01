@@ -66,6 +66,7 @@ def checkBarcodeQueue(engine, q_cart):
         if data == "nothing new!":
             break
 
+        # If queue is not empty, add a product to the shopping basket
         else:
             product = data + request_product(data)
             if len(product) > 2:
@@ -81,8 +82,8 @@ def checkRFIDQueue(engine, q_cart):
 
     if data != "nothing new!":
         mainWindow = engine.rootObjects()[0]
-        product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
-        price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
+        #product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
+        #price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
         mainWindow.findChild(QtCore.QObject, "productString").clear()
         mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
@@ -153,9 +154,7 @@ def checkDistanceQueue(engine, q_cart):
 def mainLoop(engine, q_cart):
 
     checkBarcodeQueue(engine, q_cart)
-
     checkRFIDQueue(engine, q_cart)
-
     checkDistanceQueue(engine, q_cart)
 
     mainWindow = engine.rootObjects()[0]
@@ -165,6 +164,7 @@ def mainLoop(engine, q_cart):
 
 
 def run():
+
     app = QtGui.QGuiApplication(sys.argv)
     myEngine = QtQml.QQmlApplicationEngine(parent=app)
     directory = os.path.dirname(os.path.abspath(__file__))

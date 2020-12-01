@@ -7,6 +7,7 @@ from attendance.models import RFIDUser
 from django.test import Client
 
 def userdata_request(request):
+
 	if request.method == "GET":
 		# Three parameters passed through the request
 		#rfid, amount used(can be 0), and a safety key(just for some sort of safety)
@@ -36,9 +37,7 @@ def userdata_request(request):
 						response = f"-{random_id}" #return the id with a negative sign
 						break
 
-
 		else:
-			response="ERROR: Invalid safety key." # if safety key is wrong
+			response = "ERROR: Invalid safety key." # if safety key is wrong
+
 	return HttpResponse(response)
-	
-	
