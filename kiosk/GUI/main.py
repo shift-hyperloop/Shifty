@@ -91,7 +91,7 @@ def checkRFIDQueue(engine, q_cart):
         while q_cart.qsize():
             shopped_items.append(q_cart.get())
         for item in shopped_items:
-            totalPurchaseSum += int(item[1])
+            totalPurchaseSum += int(item[2])
 
         user = request_user(data, amount_used=totalPurchaseSum)
 
