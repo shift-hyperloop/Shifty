@@ -30,12 +30,10 @@ def product_request(request):
                             # user can update name through slack
                             Products.object.create(name=f"{random_id}",price = 0, amount = 0, barcode=barcode) #create item in database with id
                             response = f"-{random_id}" #return the id with a negative sign
-                            break	
+                            break
             else:
                 response="-1" #return -1 if safety key is wrong
         else:	
-            response="-1" #return -1 if somehting was forgotten
+            response="-1" #return -1 if something was forgotten
             
     return HttpResponse(response)
-
-	

@@ -52,7 +52,7 @@ def check_inputs(engine, q_cart):
         product = request_product(data)
         if len(product) > 1:
             add_product(product, engine)
-            q_cart.put(product)
+            q_cart.put(list(data) + product)
         else:
             add_product(["SEEK HELP","420","0"], engine) # TODO
 
@@ -76,15 +76,26 @@ def check_inputs(engine, q_cart):
             loops += int(item[1])
 
         user = request_user(data, amount_used=loops)
-        if len(user) > 1:
+
+        if len(user) > 1: # Money successfully subtracted from account
+
+            # Subtract stock for purchased items
+            for item in shopped_items:
+                request_product(item[0], bought=1)
+            # TODO: check for errors
+
             # Find product and price string in QML, and clear all the entries
             mainWindow = engine.rootObjects()[0]
             mainWindow.findChild(QtCore.QObject, "productString").clear()
             mainWindow.findChild(QtCore.QObject, "priceString").clear()
-        else:
+
+        elif user[0] == "ERROR: Balance too low for purchase":
             add_product(["SEEK HELP",str(user[1]),"0"], engine) # TODO what to do if no user found?
             for item in shopped_items:
                 q_cart.put(item)
+        elif user[0] == "ERROR: Invalid safety key.":
+            # TODO: do stuff
+            pass
 
 
     # Check for distance sensor input

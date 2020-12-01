@@ -18,12 +18,13 @@ def userdata_request(request):
 			try:
 				user = RFIDUser.object.get(rfid = rfid) # try to get user from database using rfid code
 				if amount_used > 0: 
-					if user.kiosk_balance - amount_used >= 0:
+					if user.kiosk_balance >= amount_used:
 						user.kiosk_balance -= amount_used ##Update the balance in the database
 						user.save()
+						response = f"{rfid}, {user.given_name} {user.family_name},{user.kiosk_balance}"  # response the request with the name and balance
 					else:
-						response = "balance too low for purchase" # return error
-				response = f"{rfid}, {user.given_name} {user.family_name},{user.kiosk_balance}" #response the request with the name and balance
+						response = "ERROR: Balance too low for purchase" # return error
+
 			except RFIDUser.DoesNotExist: #if user doesnt exist
 				while 1:
 					random_id = random.randint(100, 300) #set random id
@@ -35,9 +36,9 @@ def userdata_request(request):
 						response = f"-{random_id}" #return the id with a negative sign
 						break
 
-						
+
 		else:
-			response="-1" #return -1 if safety key is wrong
+			response="ERROR: Invalid safety key." # if safety key is wrong
 	return HttpResponse(response)
 	
 	

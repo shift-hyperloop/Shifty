@@ -15,7 +15,7 @@ def request_user(rfid, amount_used=0, key="elonsmusk"):
     """
 
 
-def request_product(barcode, bought=0, key = "elonsmusk"):
+def request_product(barcode, bought=0, key="elonsmusk"):
 
     url = "http://shifthyperloop01.it.ntnu.no:8079/product_request"
 
