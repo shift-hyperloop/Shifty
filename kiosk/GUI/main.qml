@@ -83,8 +83,8 @@ Window {
         }
 
         TextEdit {
-            id: totalstring
-            objectName: "totalstring"
+            id: totalpricestring
+            objectName: "totalpricestring"
             x: 930
             y: 55
             width: 266
