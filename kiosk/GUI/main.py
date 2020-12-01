@@ -68,7 +68,7 @@ def checkBarcodeQueue(engine, q_cart):
 
         # If queue is not empty, add a product to the shopping basket
         else:
-            product = data + request_product(data)
+            product = list(data) + request_product(data)
             if len(product) > 2:
                 add_product(product, engine)
                 q_cart.put(product)
