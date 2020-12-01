@@ -52,22 +52,28 @@ def add_product(product, engine):
     total.insert(0, newsum)
 
 
-def mainLoop(engine, q_cart):
-    # Check for barcode input
-    r = requests.get(url="http://192.168.1.132:5000/barcode")
-    data = r.content.decode("utf-8")
-    if data != "nothing new!":
-        product = data + request_product(data)
-        if len(product) > 2:
-            add_product(product, engine)
-            q_cart.put(product)
+def checkBarcodeQueue(engine, q_cart):
+
+    while True:
+
+        data = requests.get(url="http://192.168.1.132:5000/barcode").content.decode("utf-8")
+
+        # If there are no more barcodes in the queue, let function complete
+        if data == "nothing new!":
+            break
+
         else:
-            add_product(["SEEK HELP","420","0"], engine) # TODO
+            product = data + request_product(data)
+            if len(product) > 2:
+                add_product(product, engine)
+                q_cart.put(product)
+            else:
+                add_product(["SEEK HELP","420","0"], engine) # TODO
 
 
-    # Check for RFID input
-    r = requests.get(url="http://192.168.1.132:5000/RFID")
-    data = r.content.decode("utf-8")
+def checkRFIDQueue(engine, q_cart):
+
+    data = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
 
     if data != "nothing new!":
         mainWindow = engine.rootObjects()[0]
@@ -77,13 +83,13 @@ def mainLoop(engine, q_cart):
         mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
         shopped_items = []
-        loops = 0
+        totalPurchaseSum = 0
         while q_cart.qsize():
             shopped_items.append(q_cart.get())
         for item in shopped_items:
-            loops += int(item[1])
+            totalPurchaseSum += int(item[1])
 
-        user = request_user(data, amount_used=loops)
+        user = request_user(data, amount_used=totalPurchaseSum)
 
         if len(user) > 1: # Money successfully subtracted from account
 
@@ -106,22 +112,47 @@ def mainLoop(engine, q_cart):
             pass
 
 
-    # Check for distance sensor input
-    r = requests.get(url="http://192.168.1.132:5000/distance")
-    data = r.content.decode("utf-8")
-    if data != "nothing new!":
-        if data == "del_last":
-            pass
+def checkDistanceQueue(engine, q_cart):
+
+    delete_last = False
+    delete_all = False
+
+    while True:
+
+        data = requests.get(url="http://192.168.1.132:5000/distance").content.decode("utf-8")
+
+        if data == "nothing new!":
+            break
+
+        elif data == "del_last":
+            delete_last = True
+
         elif data == "del_all":
-            # Clear shopping queue in a thread safe way
-            with q_cart.mutex:
-                q_cart.queue.clear()
-            # Find product and price string in QML, and clear all the entries
-            mainWindow = engine.rootObjects()[0]
-            mainWindow.findChild(QtCore.QObject, "productString").clear()
-            mainWindow.findChild(QtCore.QObject, "priceString").clear()
-        elif data == "easter_egg":
+            delete_all = True
+
+        elif data == "easter_egg": # TODO: Implement easter egg
             pass
+
+    if delete_all:
+        # Clear shopping queue in a thread safe way
+        with q_cart.mutex:
+            q_cart.queue.clear()
+        # Find product and price string in QML, and clear all the entries
+        mainWindow = engine.rootObjects()[0]
+        mainWindow.findChild(QtCore.QObject, "productString").clear()
+        mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
+    elif delete_last: # TODO: implement deleting last item
+        pass
+
+
+def mainLoop(engine, q_cart):
+
+    checkBarcodeQueue(engine, q_cart)
+
+    checkRFIDQueue(engine, q_cart)
+
+    checkDistanceQueue(engine, q_cart)
 
 
 def run():
@@ -129,6 +160,8 @@ def run():
     myEngine = QtQml.QQmlApplicationEngine()
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
+
+    requests.get(url="http://192.168.1.132:5000/init")
 
     timer = QtCore.QTimer(interval=100)
     timer.timeout.connect(partial(mainLoop, myEngine, q_shoppingCart))

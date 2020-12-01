@@ -6,10 +6,10 @@ import queue
 import time
 
 
-if __name__ == '__main__':                      # Only if this script is run directly
-    q_rfid = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
-    q_barcode = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
-    q_distance = queue.SimpleQueue()  # Queue for distance sensor
+if __name__ == '__main__':      # Only if this script is run directly
+    q_rfid = queue.Queue()      # Queue used for transferring the intercepted number sequences
+    q_barcode = queue.Queue()   # Queue used for transferring the intercepted number sequences
+    q_distance = queue.Queue()  # Queue for distance sensor
 
     #devices = find_USB_devices()
     #RFID_device_path = devices['RFID_device_path']
@@ -35,6 +35,15 @@ if __name__ == '__main__':                      # Only if this script is run dir
     distance_sensor_thread = threading.Thread(target=monitor_distance, args=(q_distance,), daemon=True).start() # TODO: check!
 
     app = Flask(__name__)
+
+
+    @app.route('/init')
+    def init_get():
+        q_rfid.queue.clear()
+        q_distance.queue.clear()
+        q_barcode.queue.clear()
+        return "Success"
+
 
     @app.route('/RFID')
     def rfid_get():
