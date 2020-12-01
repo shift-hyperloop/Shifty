@@ -14,6 +14,17 @@ def mainWindow_setup(w):
 
     w.setTitle("ShiftKiosk")
 
+def enter_idle_screen(engine):
+    mainWindow = engine.rootObjects()[0]
+    mainWindow.findChild(QtCore.QObject, "productString").clear()
+    mainWindow.findChild(QtCore.QObject, "priceString").clear()
+    mainWindow.findChild(QtCore.QObject, "totalstring").clear()
+    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Scan a card or product to get started!")
+
+
+def exit_idle_screen(engine):
+    engine.rootObjects()[0].findChild(QtCore.QObject, "userstring").clear()
+
 
 def add_product(product, engine):
     # Check if window still open
@@ -44,15 +55,6 @@ def add_product(product, engine):
     price_string.insert(0, new_prices)
 
 
-    # sum of prices
-    prevsum = total.property("text")
-    prevsum = prevsum.strip(",-")
-    prevsum = int(prevsum)
-    total.clear()
-    newsum = prevsum + int(product_price)
-    total.insert(0, newsum)
-
-
 def check_inputs(engine, q_cart):
     # Check for barcode input
     r = requests.get(url="http://192.168.1.132:5000/barcode")
@@ -74,6 +76,7 @@ def check_inputs(engine, q_cart):
         mainWindow = engine.rootObjects()[0]
         product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
         price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
+        total_price_string = mainWindow.findChild(QtCore.QObject, "totalpricestring").property("text")
         mainWindow.findChild(QtCore.QObject, "productString").clear()
         mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
@@ -125,15 +128,21 @@ def check_inputs(engine, q_cart):
             pass
 
 
+    total_price_string.clear()
+    total_price_string.insert(sum([int(x) for x in price_string.strip("\n").split("\n")]))
+
+
 def run():
     app = QtGui.QGuiApplication(sys.argv)
-    myEngine = QtQml.QQmlApplicationEngine()
+    myEngine = QtQml.QQmlApplicationEngine(parent=app)
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
     timer = QtCore.QTimer(interval=100)
     timer.timeout.connect(partial(check_inputs, myEngine, q_shoppingCart))
     timer.start()
+
+
     return app.exec_()
 
 if __name__ == "__main__":
