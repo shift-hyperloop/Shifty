@@ -36,7 +36,7 @@ def add_product(product, engine):
     product_string.insert(0, new_products)
 
     # Get current price string, clear and update
-    new_prices = price_string.property("text") + product_price + "\n"
+    new_prices = price_string.property("text") + product_price + ",-\n"
     price_string.clear()
     price_string.insert(0, new_prices)
 
