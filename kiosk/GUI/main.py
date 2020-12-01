@@ -55,15 +55,20 @@ def add_product(product, engine):
     price_string.insert(0, new_prices)
 
 
-def check_inputs(engine, q_cart):
+def mainLoop(engine, q_cart):
+
+    product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
+    price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
+    total_price_string = mainWindow.findChild(QtCore.QObject, "totalpricestring").property("text")
+
     # Check for barcode input
     r = requests.get(url="http://192.168.1.132:5000/barcode")
     data = r.content.decode("utf-8")
     if data != "nothing new!":
-        product = request_product(data)
-        if len(product) > 1:
+        product = data + request_product(data)
+        if len(product) > 2:
             add_product(product, engine)
-            q_cart.put(list(data) + product)
+            q_cart.put(product)
         else:
             add_product(["SEEK HELP","420","0"], engine) # TODO
 
@@ -74,9 +79,7 @@ def check_inputs(engine, q_cart):
 
     if data != "nothing new!":
         mainWindow = engine.rootObjects()[0]
-        product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
-        price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
-        total_price_string = mainWindow.findChild(QtCore.QObject, "totalpricestring").property("text")
+
         mainWindow.findChild(QtCore.QObject, "productString").clear()
         mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
@@ -139,10 +142,8 @@ def run():
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(check_inputs, myEngine, q_shoppingCart))
+    timer.timeout.connect(partial(mainLoop, myEngine, q_shoppingCart))
     timer.start()
-
-
     return app.exec_()
 
 if __name__ == "__main__":
