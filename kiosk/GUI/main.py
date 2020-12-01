@@ -7,7 +7,7 @@ import requests
 from post_request_test import request_product, request_user
 
 
-q_shoppingCart = queue.SimpleQueue()
+q_shoppingCart = queue.Queue()
 
 
 def mainWindow_setup(w):
