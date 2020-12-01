@@ -47,10 +47,10 @@ def check_inputs(engine, q_cart):
     r = requests.get(url="http://192.168.1.132:5000/barcode")
     data = r.content.decode("utf-8")
     if data != "nothing new!":
-        product = request_product(data)
-        if len(product) > 1:
+        product = data + request_product(data)
+        if len(product) > 2:
             add_product(product, engine)
-            q_cart.put(list(data) + product)
+            q_cart.put(product)
         else:
             add_product(["SEEK HELP","420","0"], engine) # TODO
 
