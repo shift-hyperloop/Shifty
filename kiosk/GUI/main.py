@@ -24,6 +24,8 @@ def add_product(product, engine):
     mainWindow = engine.rootObjects()[0]
     product_string = mainWindow.findChild(QtCore.QObject, "productString")
     price_string = mainWindow.findChild(QtCore.QObject, "priceString")
+    total = mainWindow.findChild(QtCore.QObject, "totalstring")
+    mainWindow.findChild(QtCore.QObject, "userstring").insert(0, "Total:")
 
     # Find product name and price to be added
     product_barcode = product[0]
@@ -40,6 +42,15 @@ def add_product(product, engine):
     new_prices = price_string.property("text") + product_price + ",-\n"
     price_string.clear()
     price_string.insert(0, new_prices)
+
+
+    # sum of prices
+    prevsum = total.property("text")
+    prevsum = prevsum.strip(",-")
+    prevsum = int(prevsum)
+    total.clear()
+    newsum = prevsum + int(product_price)
+    total.insert(0, newsum)
 
 
 def check_inputs(engine, q_cart):
