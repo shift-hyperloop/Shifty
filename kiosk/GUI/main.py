@@ -5,6 +5,8 @@ from functools import partial
 import queue
 import requests
 from post_request_test import request_product, request_user
+import threading
+import time
 
 
 q_shoppingCart = queue.SimpleQueue()
@@ -26,9 +28,10 @@ def add_product(product, engine):
     price_string = mainWindow.findChild(QtCore.QObject, "priceString")
 
     # Find product name and price to be added
-    product_name = product[0]
-    product_price = product[1]
-    product_stock = product[2]
+    product_barcode = product[0]
+    product_name = product[1]
+    product_price = product[2]
+    product_stock = product[3]
 
     # Get current product string, clear and update
     new_products = product_string.property("text") + product_name + "\n"
@@ -53,11 +56,18 @@ def check_inputs(engine, q_cart):
         else:
             add_product(["SEEK HELP","420","0"], engine) # TODO
 
+
     # Check for RFID input
     r = requests.get(url="http://192.168.1.132:5000/RFID")
     data = r.content.decode("utf-8")
 
     if data != "nothing new!":
+        mainWindow = engine.rootObjects()[0]
+        product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
+        price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
+        mainWindow.findChild(QtCore.QObject, "productString").clear()
+        mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
         shopped_items = []
         loops = 0
         while q_cart.qsize():
@@ -72,11 +82,12 @@ def check_inputs(engine, q_cart):
             mainWindow.findChild(QtCore.QObject, "productString").clear()
             mainWindow.findChild(QtCore.QObject, "priceString").clear()
         else:
-            add_product(["SEEK HELP",str(user[0]),"0"], engine) # TODO what to do if no user found?
+            add_product(["SEEK HELP",str(user[1]),"0"], engine) # TODO what to do if no user found?
             for item in shopped_items:
                 q_cart.put(item)
 
-    # Check for distance sensor stuff
+
+    # Check for distance sensor input
     r = requests.get(url="http://192.168.1.132:5000/distance")
     data = r.content.decode("utf-8")
     if data != "nothing new!":

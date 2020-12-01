@@ -20,7 +20,7 @@ def product_request(request):
                     if number_purchased > 0:
                         item.amount -= number_purchased
                         item.save()
-                    response = f"{item.name},{item.price},{item.amount}"
+                    response = f"{barcode}, {item.name},{item.price},{item.amount}"
                 except Products.DoesNotExist:
                     while 1:
                         random_id = random.randint(100, 300) #set random id

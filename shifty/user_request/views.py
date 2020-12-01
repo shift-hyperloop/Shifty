@@ -23,7 +23,7 @@ def userdata_request(request):
 						user.save()
 					else:
 						response = "balance too low for purchase" # return error
-				response = f"{user.given_name} {user.family_name},{user.kiosk_balance}" #response the request with the name and balance
+				response = f"{rfid}, {user.given_name} {user.family_name},{user.kiosk_balance}" #response the request with the name and balance
 			except RFIDUser.DoesNotExist: #if user doesnt exist
 				while 1:
 					random_id = random.randint(100, 300) #set random id
