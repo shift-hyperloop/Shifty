@@ -15,6 +15,7 @@ def mainWindow_setup(w):
     w.setTitle("ShiftKiosk")
 
 def enter_idle_screen(engine):
+
     mainWindow = engine.rootObjects()[0]
     mainWindow.findChild(QtCore.QObject, "productString").clear()
     mainWindow.findChild(QtCore.QObject, "priceString").clear()
@@ -160,7 +161,7 @@ def mainLoop(engine, q_cart):
     mainWindow = engine.rootObjects()[0]
     total_price_string = mainWindow.findChild(QtCore.QObject, "totalpricestring").property("text")
     total_price_string.clear()
-    total_price_string.insert(sum([int(x) for x in price_string.strip("\n").split("\n")]))
+    total_price_string.insert(sum([int(x) for x in total_price_string.strip("\n").split("\n")]))
 
 
 def run():
@@ -169,7 +170,7 @@ def run():
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    requests.get(url="http://192.168.1.132:5000/init")
+    requests.get(url="http://192.168.1.132:5000/init") # Clears all the queues in the sensor suite
 
     timer = QtCore.QTimer(interval=100)
     timer.timeout.connect(partial(mainLoop, myEngine, q_shoppingCart))
