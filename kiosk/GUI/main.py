@@ -5,8 +5,6 @@ from functools import partial
 import queue
 import requests
 from post_request_test import request_product, request_user
-import threading
-import time
 
 
 q_shoppingCart = queue.SimpleQueue()
