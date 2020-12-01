@@ -46,9 +46,10 @@ def add_product(product, engine):
 
     with open('log.txt', "a") as myfile:
         myfile.writelines(product_barcode)
-        sys.stdout.write(product_name)
-        sys.stdout.write(product_price)
-        sys.stdout.write(product_stock)
+        myfile.writelines(product_name)
+        myfile.writelines(product_price)
+        myfile.writelines(product_stock)
+        myfile.writelines(product)
 
     # Get current product string, clear and update
     new_products = product_string.property("text") + product_name + "\n"
