@@ -7,7 +7,7 @@ import requests
 from post_request_test import request_product, request_user
 
 
-shopping_list_q = queue.SimpleQueue()
+q_shoppingCart = queue.SimpleQueue()
 
 
 def mainWindow_setup(w):
@@ -41,7 +41,7 @@ def add_product(product, engine):
     price_string.insert(0, new_prices)
 
 
-def check_inputs(engine, shopping_list):
+def check_inputs(engine, q_cart):
     # Check for barcode input
     r = requests.get(url="http://192.168.1.132:5000/barcode")
     data = r.content.decode("utf-8")
@@ -49,7 +49,7 @@ def check_inputs(engine, shopping_list):
         product = request_product(data)
         if len(product) > 1:
             add_product(product, engine)
-            shopping_list.put(product)
+            q_cart.put(product)
         else:
             add_product(["SEEK HELP","420","0"], engine) # TODO
 
@@ -60,8 +60,8 @@ def check_inputs(engine, shopping_list):
     if data != "nothing new!":
         shopped_items = []
         loops = 0
-        while shopping_list.qsize():
-            shopped_items.append(shopping_list.get())
+        while q_cart.qsize():
+            shopped_items.append(q_cart.get())
         for item in shopped_items:
             loops += int(item[1])
 
@@ -74,7 +74,7 @@ def check_inputs(engine, shopping_list):
         else:
             add_product(["SEEK HELP",str(user[0]),"0"], engine) # TODO what to do if no user found?
             for item in shopped_items:
-                shopping_list.put(item)
+                q_cart.put(item)
 
     # Check for distance sensor stuff
     r = requests.get(url="http://192.168.1.132:5000/distance")
@@ -83,6 +83,9 @@ def check_inputs(engine, shopping_list):
         if data == "del_last":
             pass
         elif data == "del_all":
+            # Clear shopping queue in a thread safe way
+            with q_cart.mutex:
+                q_cart.queue.clear()
             # Find product and price string in QML, and clear all the entries
             mainWindow = engine.rootObjects()[0]
             mainWindow.findChild(QtCore.QObject, "productString").clear()
@@ -98,7 +101,7 @@ def run():
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(check_inputs, myEngine, shopping_list_q))
+    timer.timeout.connect(partial(check_inputs, myEngine, q_shoppingCart))
     timer.start()
     return app.exec_()
 
