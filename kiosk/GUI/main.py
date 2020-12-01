@@ -177,5 +177,10 @@ def run():
     timer.start()
     return app.exec_()
 
+
 if __name__ == "__main__":
-    sys.exit(run())
+    try:
+        sys.exit(run())
+    except Exception as e:
+        with open('log.txt', "a") as logfile:
+            logfile.write(e)
