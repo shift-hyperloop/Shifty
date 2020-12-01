@@ -43,7 +43,6 @@ def add_product(product, engine):
     price_string.clear()
     price_string.insert(0, new_prices)
 
-
     # sum of prices
     prevsum = total.property("text")
     prevsum = prevsum.strip(",-")
@@ -53,7 +52,7 @@ def add_product(product, engine):
     total.insert(0, newsum)
 
 
-def check_inputs(engine, q_cart):
+def mainLoop(engine, q_cart):
     # Check for barcode input
     r = requests.get(url="http://192.168.1.132:5000/barcode")
     data = r.content.decode("utf-8")
@@ -132,7 +131,7 @@ def run():
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(check_inputs, myEngine, q_shoppingCart))
+    timer.timeout.connect(partial(mainLoop, myEngine, q_shoppingCart))
     timer.start()
     return app.exec_()
 
