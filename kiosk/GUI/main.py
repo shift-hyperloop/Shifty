@@ -45,7 +45,8 @@ def add_product(product, engine):
     product_stock = product[3]
 
     with open('log.txt', "a") as myfile:
-        myfile.writelines(product)
+        for item in product:
+            myfile.write(item + "\n")
 
     # Get current product string, clear and update
     new_products = product_string.property("text") + product_name + "\n"
