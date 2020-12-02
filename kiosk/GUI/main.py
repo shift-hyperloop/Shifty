@@ -1,17 +1,19 @@
 import sys
 import os
+import time
+import queue
+
 from PyQt5 import QtCore, QtGui, QtQml
 from functools import partial
-import queue
-import requests
-from request_methods import request_product_data, request_purchase
-import datetime
-import time
+
+from request_methods import *
 
 
+# TODO: wat dis??
 def mainWindow_setup(w):
 
     w.setTitle("ShiftKiosk")
+
 
 def enter_idle_screen(engine):
 
@@ -30,11 +32,11 @@ def update_total_price(engine):
     mainWindow = engine.rootObjects()[0]
     if mainWindow.findChild(QtCore.QObject, "pricestring"):
         price_string = mainWindow.findChild(QtCore.QObject, "pricestring").property("text")
-        total_price_string = sum([int(x) for x in price_string.strip("\n").split("\n")]) # Splits string by "\n" into list, takes sum of list elements
+        total_price_string = sum([int(x) for x in price_string.strip("\n").split("\n")])  # Splits string by "\n" into list, takes sum of list elements
         mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(total_price_string)
 
 
-def add_product(product, engine):
+def add_product(product, engine, q_cart):
     # Check if window still open
     if not engine.rootObjects():
         return -1
@@ -48,7 +50,6 @@ def add_product(product, engine):
     product_barcode = product[0]
     product_name = product[1]
     product_price = product[2]
-    product_stock = product[3]
 
     # Get current product string, clear and update
     new_products = product_string.property("text") + product_name + "\n"
@@ -60,25 +61,34 @@ def add_product(product, engine):
     price_string.clear()
     price_string.insert(0, new_prices)
 
+    q_cart.put(product)
+
 
 def query_barcode_scanner(engine, q_cart):
 
     while True:
 
-        barcode = requests.get(url="http://192.168.1.132:5000/barcode").content.decode("utf-8")
+        response = requests.get(url="http://192.168.1.132:5000/barcode").content.decode("utf-8")
 
         # If there are no more barcodes in the queue, let function complete
-        if barcode == "nothing new!":
+        if response == "nothing new!":
             break
 
-        # If queue is not empty, add a product to the shopping basket
+        # If queue is not empty, request product data from the django database
         else:
-            product = [barcode] + request_product_data(barcode)
-            if len(product) > 2:
-                add_product(product, engine)
-                q_cart.put(product)
-            else:
-                add_product(["SEEK HELP","420","0"], engine) # TODO
+            product = request_product_data(response)
+
+            # If a list with more than one entry is returned, the product exists in the database. Add to basket.
+            if len(product) > 1:
+                add_product(product, engine, q_cart)
+
+            # If the product doesn't exist in the database, TODO: inform that product was added to DB as {product[0]}.
+            elif -300 <= int(product[0]) <= -100:
+                pass
+
+            # If the call returned "-1", something else went wrong. TODO: inform customer that he is fucked. Sound?
+            elif int(product[0]) == -1:
+                pass
 
 
 def query_distance_sensor(engine, q_cart):
@@ -99,7 +109,7 @@ def query_distance_sensor(engine, q_cart):
         elif data == "del_all":
             delete_all = True
 
-        elif data == "easter_egg": # TODO: Implement easter egg
+        elif data == "easter_egg":  # TODO: Implement easter egg
             pass
 
     if delete_all:
@@ -111,7 +121,7 @@ def query_distance_sensor(engine, q_cart):
         mainWindow.findChild(QtCore.QObject, "productString").clear()
         mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
-    elif delete_last: # TODO: implement deleting last item
+    elif delete_last:  # TODO: implement deleting last item
         pass
 
 
@@ -125,15 +135,15 @@ def query_rfid_scanner(engine, q_cart):
         mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
         shopped_items = []
-        totalPurchaseSum = 0
+        tot_purchase_sum = 0
         while q_cart.qsize():
             shopped_items.append(q_cart.get())
         for item in shopped_items:
-            totalPurchaseSum += int(item[2])
+            tot_purchase_sum += int(item[2])
 
-        user = request_purchase(response, purchaseSum=totalPurchaseSum)
+        user = request_purchase(response, purchase_sum=tot_purchase_sum)
 
-        if len(user) > 1: # Money successfully subtracted from account
+        if len(user) > 1:  # Money successfully subtracted from account
 
             # Subtract stock for purchased items
             for item in shopped_items:
@@ -146,7 +156,7 @@ def query_rfid_scanner(engine, q_cart):
             mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
         elif user[0] == "ERROR: Balance too low for purchase":
-            add_product(["SEEK HELP",str(user[1]),"0"], engine) # TODO what to do if no user found?
+            add_product(["SEEK HELP", str(user[1]), "0"], engine)  # TODO what to do if no user found?
             for item in shopped_items:
                 q_cart.put(item)
         elif user[0] == "ERROR: Invalid safety key.":
@@ -154,7 +164,7 @@ def query_rfid_scanner(engine, q_cart):
             pass
 
 
-def mainLoop(engine, q_cart):
+def main_loop(engine, q_cart):
 
     query_barcode_scanner(engine, q_cart)
     query_distance_sensor(engine, q_cart)
@@ -174,7 +184,7 @@ def run():
     attempts = 0
     while True:
         try:
-            requests.get(url="http://192.168.1.132:5000/init") # Clears all the queues in the sensor suite
+            requests.get(url="http://192.168.1.132:5000/init")  # Clears all the queues in the sensor suite
             break
         except ConnectionError:
             attempts += 1
@@ -184,7 +194,7 @@ def run():
             time.sleep(10)
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(mainLoop, myEngine, q_shopping_cart))
+    timer.timeout.connect(partial(main_loop, myEngine, q_shopping_cart))
     timer.start()
 
     return app.exec_()
