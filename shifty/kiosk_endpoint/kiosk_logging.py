@@ -2,11 +2,11 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
-def log_product(product_name, username, stock_change, price, user_balance_before, user_balance_after, stock_before_change, stock_after_change):
+def log_everything(product_name, username, stock_change, price, user_balance_before, user_balance_after, stock_before_change, stock_after_change):
 	"""
 	Inputs:
-	Product name
-	User-name            = name of user buying
+	product name
+	username            = name of user buying
 	stock_change         = How many products are bought
 	price                = current price of product
 	user_balance_after   = balance of user after purchase

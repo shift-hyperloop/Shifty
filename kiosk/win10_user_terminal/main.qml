@@ -34,48 +34,68 @@ Window {
 
         Column {
             id: itemList
-            x: 175
-            y: 40
+            x: 172
+            y: 128
             width: 709
             height: 775
             padding: 0
             objectName: "Left Column"
 
             TextEdit {
-                id: priceString
+                id: productString
+                width: 400
                 text: ""
                 anchors.right: parent.right
                 horizontalAlignment: Text.AlignRight
                 font.pointSize: 18
                 objectName: "productString"
             }
-
-
         }
 
         Column {
             id: priceList
-            x: 933
-            y: 40
+            x: 930
+            y: 128
             width: 320
             height: 775
             objectName: "Right Column"
 
             TextEdit {
+                width: 100
                 text: ""
                 font.pointSize: 18
                 objectName: "priceString"
             }
         }
 
+        TextEdit {
+            id: userstring
+            objectName: "userstring"
+            x: 446
+            y: 55
+            width: 435
+            height: 67
+            horizontalAlignment: Text.AlignRight
+            text: ""
+            font.pixelSize: 18
+        }
 
+        TextEdit {
+            id: totalpricestring
+            objectName: "totalpricestring"
+            x: 930
+            y: 55
+            width: 266
+            height: 67
+            text: ""
+            font.pixelSize: 12
         }
     }
-
+}
 
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.6600000262260437}
+    D{i:0;formeditorZoom:0.5}
 }
 ##^##*/
