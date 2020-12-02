@@ -27,9 +27,9 @@ def post_purchase_order(rfid, barcode, total_price):
         total_price: total price of shopping cart
     """
     data = {
-        "event":"finish_purchase","rfid":rfid,
-        "barcode":barcode, "total_price":total_price
+        "event": "finish_purchase", "rfid": rfid,
+        "barcode": barcode, "total_price": total_price
     }
-    response = requests.post(url, data = data)
+    response = requests.post(url, data=data)
     if response.status_code != 200:
         print("Fuck, something went wrong")
