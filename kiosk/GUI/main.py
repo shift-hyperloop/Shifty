@@ -170,7 +170,18 @@ def run():
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
     q_shopping_cart = queue.Queue()
-    requests.get(url="http://192.168.1.132:5000/init") # Clears all the queues in the sensor suite
+
+    attempts = 0
+    while True:
+        try:
+            requests.get(url="http://192.168.1.132:5000/init") # Clears all the queues in the sensor suite
+            break
+        except ConnectionError:
+            attempts += 1
+            # TODO: Visual or audio response that connection failed?
+            if attempts > 2:
+                sys.exit()
+            time.sleep(10)
 
     timer = QtCore.QTimer(interval=100)
     timer.timeout.connect(partial(mainLoop, myEngine, q_shopping_cart))
