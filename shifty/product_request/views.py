@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import random
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 from internal_kiosk_website.models import Products
 
-
+@csrf_exempt
 def product_request(request):
     if request.method == "GET":
         # Two parameters passed through the request
@@ -35,7 +36,12 @@ def product_request(request):
                 response="-1" #return -1 if safety key is wrong
         else:	
             response="-1" #return -1 if somehting was forgotten
-            
-    return HttpResponse(response)
+        return HttpResponse(response)
+    if request.method == "POST":
+        print("hello")   
+        print(request.POST) 
+        print(request.POST.getlist("product"))
+        return HttpResponse(status=201)    
+    
 
 	
