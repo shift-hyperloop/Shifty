@@ -50,29 +50,30 @@
 # # """
 
 import requests
-url = "http://127.0.0.1:8000/kiosk"
+url = "http://129.241.14.60:8079/kiosk"
 
-rfid = "904446217592"
-barcode = ["dsaddsafdgf3", "dsaddsafdgf3"]
+rfid = "0331190651"
+barcode = ["7311041002957", "7311041002957"]
 total_price = 20
 data = {
     "event":"finish_purchase","rfid":rfid,
     "barcode":barcode, "total_price":total_price
 }
 response = requests.post(url, data=data)
-print(type(response.status_code))
+print(response.status_code)
 
-
+#8 shift cups
+#money aleks 351
 
 
 
 # print(f"{url}?rfid={rfid}&loops_used={amount_used}&key={key}")
-"""
-returns [name, balance]
-if user does not exist -> returns negative id between -100 -> -300
- gets added to database with the rfid, change name through slack
-returns -1 if error
-"""
+# """
+# returns [name, balance]
+# if user does not exist -> returns negative id between -100 -> -300
+#  gets added to database with the rfid, change name through slack
+# returns -1 if error
+# """
 
 
 
