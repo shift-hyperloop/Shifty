@@ -13,7 +13,7 @@ def product_request(request):
         number_purchased = int(request.GET.get("bought"))
         safety_key = request.GET.get("key")
 
-        if barcode and safety_key and number_purchased: # Check if all necessary parameters were passed
+        if barcode and safety_key and number_purchased!=None:  # Check if all necessary parameters were passed
             if safety_key == "elonsmusk":  # Check if the correct safety key has been used
 
                 try:
@@ -26,7 +26,7 @@ def product_request(request):
                 except Products.DoesNotExist:
 
                     while 1:
-                        random_id = random.randint(100, 300)  # set random id
+                        random_id = random.randint(100, 300)  # Set random id
                         try: 
                             Products.object.get(name=str(random_id))  # check if id exists
 

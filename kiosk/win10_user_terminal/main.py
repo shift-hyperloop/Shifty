@@ -9,12 +9,6 @@ from functools import partial
 from request_methods import *
 
 
-# TODO: wat dis?? Eirik?
-def mainWindow_setup(w):
-
-    w.setTitle("ShiftKiosk")
-
-
 def enter_idle_screen(engine):
 
     mainWindow = engine.rootObjects()[0]
@@ -25,10 +19,12 @@ def enter_idle_screen(engine):
 
 
 def exit_idle_screen(engine):
+
     engine.rootObjects()[0].findChild(QtCore.QObject, "userstring").clear().insert(0, "Total:")
 
 
 def update_total_price(engine):
+
     mainWindow = engine.rootObjects()[0]
     if mainWindow.findChild(QtCore.QObject, "pricestring"):
         price_string = mainWindow.findChild(QtCore.QObject, "pricestring").property("text")
@@ -91,6 +87,10 @@ def query_barcode_scanner(engine, q_cart):
         # If queue is not empty, request product data from the django database
         else:
             product = request_product_data(response)
+
+            print(response)
+            for b in product:
+                print(b)
 
             # If a list with more than one entry is returned, the product exists in the database. Add to basket.
             if len(product) > 1:
