@@ -4,10 +4,9 @@ from PyQt5 import QtCore, QtGui, QtQml
 from functools import partial
 import queue
 import requests
-from post_request_test import request_product, request_user
-
-
-q_shoppingCart = queue.Queue()
+from request_methods import request_product_data, request_purchase
+import datetime
+import time
 
 
 def mainWindow_setup(w):
@@ -27,6 +26,14 @@ def exit_idle_screen(engine):
     engine.rootObjects()[0].findChild(QtCore.QObject, "userstring").clear().insert(0, "Total:")
 
 
+def update_total_price(engine):
+    mainWindow = engine.rootObjects()[0]
+    if mainWindow.findChild(QtCore.QObject, "pricestring"):
+        price_string = mainWindow.findChild(QtCore.QObject, "pricestring").property("text")
+        total_price_string = sum([int(x) for x in price_string.strip("\n").split("\n")]) # Splits string by "\n" into list, takes sum of list elements
+        mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(total_price_string)
+
+
 def add_product(product, engine):
     # Check if window still open
     if not engine.rootObjects():
@@ -36,7 +43,6 @@ def add_product(product, engine):
     mainWindow = engine.rootObjects()[0]
     product_string = mainWindow.findChild(QtCore.QObject, "productString")
     price_string = mainWindow.findChild(QtCore.QObject, "priceString")
-    total = mainWindow.findChild(QtCore.QObject, "totalstring")
 
     # Find product name and price to be added
     product_barcode = product[0]
@@ -55,7 +61,7 @@ def add_product(product, engine):
     price_string.insert(0, new_prices)
 
 
-def checkBarcodeQueue(engine, q_cart):
+def query_barcode_scanner(engine, q_cart):
 
     while True:
 
@@ -67,7 +73,7 @@ def checkBarcodeQueue(engine, q_cart):
 
         # If queue is not empty, add a product to the shopping basket
         else:
-            product = [barcode] + request_product(barcode)
+            product = [barcode] + request_product_data(barcode)
             if len(product) > 2:
                 add_product(product, engine)
                 q_cart.put(product)
@@ -75,48 +81,7 @@ def checkBarcodeQueue(engine, q_cart):
                 add_product(["SEEK HELP","420","0"], engine) # TODO
 
 
-def checkRFIDQueue(engine, q_cart):
-
-    data = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
-
-    if data != "nothing new!":
-        mainWindow = engine.rootObjects()[0]
-        #product_string = mainWindow.findChild(QtCore.QObject, "productString").property("text")
-        #price_string = mainWindow.findChild(QtCore.QObject, "priceString").property("text")
-        mainWindow.findChild(QtCore.QObject, "productString").clear()
-        mainWindow.findChild(QtCore.QObject, "priceString").clear()
-
-        shopped_items = []
-        totalPurchaseSum = 0
-        while q_cart.qsize():
-            shopped_items.append(q_cart.get())
-        for item in shopped_items:
-            totalPurchaseSum += int(item[2])
-
-        user = request_user(data, amount_used=totalPurchaseSum)
-
-        if len(user) > 1: # Money successfully subtracted from account
-
-            # Subtract stock for purchased items
-            for item in shopped_items:
-                request_product(item[0], bought=1)
-            # TODO: check for errors
-
-            # Find product and price string in QML, and clear all the entries
-            mainWindow = engine.rootObjects()[0]
-            mainWindow.findChild(QtCore.QObject, "productString").clear()
-            mainWindow.findChild(QtCore.QObject, "priceString").clear()
-
-        elif user[0] == "ERROR: Balance too low for purchase":
-            add_product(["SEEK HELP",str(user[1]),"0"], engine) # TODO what to do if no user found?
-            for item in shopped_items:
-                q_cart.put(item)
-        elif user[0] == "ERROR: Invalid safety key.":
-            # TODO: do stuff
-            pass
-
-
-def checkDistanceQueue(engine, q_cart):
+def query_distance_sensor(engine, q_cart):
 
     delete_last = False
     delete_all = False
@@ -150,17 +115,51 @@ def checkDistanceQueue(engine, q_cart):
         pass
 
 
+def query_rfid_scanner(engine, q_cart):
+
+    response = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
+
+    if response != "nothing new!":
+        mainWindow = engine.rootObjects()[0]
+        mainWindow.findChild(QtCore.QObject, "productString").clear()
+        mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
+        shopped_items = []
+        totalPurchaseSum = 0
+        while q_cart.qsize():
+            shopped_items.append(q_cart.get())
+        for item in shopped_items:
+            totalPurchaseSum += int(item[2])
+
+        user = request_purchase(response, purchaseSum=totalPurchaseSum)
+
+        if len(user) > 1: # Money successfully subtracted from account
+
+            # Subtract stock for purchased items
+            for item in shopped_items:
+                request_product_data(item[0], bought=1)
+            # TODO: check for errors
+
+            # Find product and price string in QML, and clear all the entries
+            mainWindow = engine.rootObjects()[0]
+            mainWindow.findChild(QtCore.QObject, "productString").clear()
+            mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
+        elif user[0] == "ERROR: Balance too low for purchase":
+            add_product(["SEEK HELP",str(user[1]),"0"], engine) # TODO what to do if no user found?
+            for item in shopped_items:
+                q_cart.put(item)
+        elif user[0] == "ERROR: Invalid safety key.":
+            # TODO: do stuff
+            pass
+
+
 def mainLoop(engine, q_cart):
 
-    checkBarcodeQueue(engine, q_cart)
-    checkRFIDQueue(engine, q_cart)
-    checkDistanceQueue(engine, q_cart)
-
-    mainWindow = engine.rootObjects()[0]
-    if mainWindow.findChild(QtCore.QObject, "pricestring"):
-        price_string = mainWindow.findChild(QtCore.QObject, "pricestring").property("text")
-        total_price_string = sum([int(x) for x in price_string.strip("\n").split("\n")]) # Splits string by "\n" into list, takes sum of list elements
-        mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(total_price_string)
+    query_barcode_scanner(engine, q_cart)
+    query_distance_sensor(engine, q_cart)
+    query_rfid_scanner(engine, q_cart)
+    update_total_price(engine)
 
 
 def run():
@@ -170,17 +169,15 @@ def run():
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
+    q_shopping_cart = queue.Queue()
     requests.get(url="http://192.168.1.132:5000/init") # Clears all the queues in the sensor suite
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(mainLoop, myEngine, q_shoppingCart))
+    timer.timeout.connect(partial(mainLoop, myEngine, q_shopping_cart))
     timer.start()
+
     return app.exec_()
 
 
 if __name__ == "__main__":
-    try:
-        sys.exit(run())
-    except Exception as e:
-        with open('log.txt', "a") as logfile:
-            logfile.write(e)
+    sys.exit(run())

@@ -1,11 +1,11 @@
 import requests
 
 
-def request_user(rfid, amount_used=0, key="elonsmusk"):
+def request_purchase(customer_rfid, purchase_sum=0, key="elonsmusk"):
 
     url = "http://shifthyperloop01.it.ntnu.no:8079/user_request"
 
-    return requests.get(f"{url}?rfid={rfid}&loops_used={amount_used}&key={key}").text.split(",")
+    return requests.get(f"{url}?rfid={customer_rfid}&loops_used={purchase_sum}&key={key}").text.split(",")
 
 """
     returns [name, balance]
@@ -15,7 +15,7 @@ def request_user(rfid, amount_used=0, key="elonsmusk"):
     """
 
 
-def request_product(barcode, bought=0, key="elonsmusk"):
+def request_product_data(barcode, bought=0, key="elonsmusk"):
 
     url = "http://shifthyperloop01.it.ntnu.no:8079/product_request"
 
