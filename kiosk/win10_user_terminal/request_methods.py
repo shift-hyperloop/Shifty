@@ -1,13 +1,15 @@
 import requests
 url = "http://shifthyperloop01.it.ntnu.no:8079/kiosk"
 
+
 def get_product(barcode):
     """
     Get product from database by barcode
     returns: [id] if not exists
     else     [barcode, product name, price, number in stock]
     """
-    return requests.get(f"{url}?event = get_product&barcode = {barcode}").text.split(",")
+    return requests.get(f"{url}?event=get_product&barcode={barcode}").text.split(",")
+
 
 def get_user(rfid):
     """
@@ -15,7 +17,8 @@ def get_user(rfid):
     returns: [id] if not exists
     else     [rfid, full name, balance]
     """
-    return requests.get(f"{url}?event = get_user&rfid = {rfid}").text.split(",")
+    return requests.get(f"{url}?event=get_user&rfid={rfid}").text.split(",")
+
 
 def finish_purchase(rfid, barcode, total_price):
     """
