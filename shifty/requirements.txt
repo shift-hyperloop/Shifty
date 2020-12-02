@@ -3,4 +3,3 @@ mysqlclient
 django-crispy-forms
 slackclient
 spidev
-evdev

@@ -1,0 +1,10 @@
+from django.shortcuts import render
+import os
+
+def testing(request):
+	if request.method == "POST":
+		os.system(f"wall 'hello bendik, this is a post: {request}'")
+	elif request.method == "GET":
+		os.system(f"wall 'Yo bendik, this is a get: {request}
+
+# Create your views here.

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Shift Hyperloop Super Amazing Incredible Kiosk</h1>
+<hr>
+<form action="." method="post">
+  {% csrf_token %}
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Product</th>
+      <th scope="col">Price</th>
+      <th scope="col">Number of items in stock</th>
+      <th scope="col">Add item(+-)</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for prod in prods %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><input name="{{prod.name}}_name" type="text" placeholder="{{prod.name}}"></td>
+          <td><input name="{{prod.name}}_price" type="number" placeholder="{{prod.price}}"></td>
+          <td>{{prod.amount}}</td>
+          <td scope="col">
+            <input name="{{prod.name}}_stock" type="number"> 
+          </td>
+        </tr>
+      {% endfor %}
+  </tbody>
+
+</table>
+<input type="submit" value="Update data">
+</form>
+
+
+
+{% endblock %}
