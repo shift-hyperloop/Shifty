@@ -6,3 +6,4 @@ spidev
 evdev
 PyQt5
 requests
+django-annoying
