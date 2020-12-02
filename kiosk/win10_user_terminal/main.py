@@ -9,7 +9,7 @@ from functools import partial
 from request_methods import *
 
 
-# TODO: wat dis??
+# TODO: wat dis?? Eirik?
 def mainWindow_setup(w):
 
     w.setTitle("ShiftKiosk")
@@ -36,10 +36,7 @@ def update_total_price(engine):
         mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(total_price_string)
 
 
-def add_product(product, engine, q_cart):
-    # Check if window still open
-    if not engine.rootObjects():
-        return -1
+def basket_add(product, engine, q_cart):
 
     # Find product and price string in QML
     mainWindow = engine.rootObjects()[0]
@@ -64,6 +61,23 @@ def add_product(product, engine, q_cart):
     q_cart.put(product)
 
 
+# TODO: Implement deleting last cart entry
+def basket_delete_last(engine, q_cart):
+    return NotImplementedError('Deleting last entry not yet implemented')
+
+
+def basket_delete_all(engine, q_cart):
+
+    # Clear shopping queue in a thread-safe way
+    with q_cart.mutex:
+        q_cart.queue.clear()
+
+    # Find product and price string in QML, and clear all the entries
+    mainWindow = engine.rootObjects()[0]
+    mainWindow.findChild(QtCore.QObject, "productString").clear()
+    mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
+
 def query_barcode_scanner(engine, q_cart):
 
     while True:
@@ -80,13 +94,13 @@ def query_barcode_scanner(engine, q_cart):
 
             # If a list with more than one entry is returned, the product exists in the database. Add to basket.
             if len(product) > 1:
-                add_product(product, engine, q_cart)
+                basket_add(product, engine, q_cart)
 
-            # If the product doesn't exist in the database, TODO: inform that product was added to DB as {product[0]}.
+            # Product did not exist in the database, TODO: inform that product was added to DB as {product[0]}.
             elif -300 <= int(product[0]) <= -100:
                 pass
 
-            # If the call returned "-1", something else went wrong. TODO: inform customer that he is fucked. Sound?
+            # Something else went wrong. TODO: inform customer that (s)he is fucked. Play mocking sound.
             elif int(product[0]) == -1:
                 pass
 
@@ -109,20 +123,14 @@ def query_distance_sensor(engine, q_cart):
         elif data == "del_all":
             delete_all = True
 
-        elif data == "easter_egg":  # TODO: Implement easter egg
+        elif data == "easter_egg":  # TODO: Wilhelm scream?
             pass
 
     if delete_all:
-        # Clear shopping queue in a thread safe way
-        with q_cart.mutex:
-            q_cart.queue.clear()
-        # Find product and price string in QML, and clear all the entries
-        mainWindow = engine.rootObjects()[0]
-        mainWindow.findChild(QtCore.QObject, "productString").clear()
-        mainWindow.findChild(QtCore.QObject, "priceString").clear()
+        basket_delete_all(engine, q_cart)
 
-    elif delete_last:  # TODO: implement deleting last item
-        pass
+    elif delete_last:
+        basket_delete_last(engine, q_cart)
 
 
 def query_rfid_scanner(engine, q_cart):
@@ -156,7 +164,7 @@ def query_rfid_scanner(engine, q_cart):
             mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
         elif user[0] == "ERROR: Balance too low for purchase":
-            add_product(["SEEK HELP", str(user[1]), "0"], engine)  # TODO what to do if no user found?
+            basket_add(["SEEK HELP", str(user[1]), "0"], engine)  # TODO what to do if no user found?
             for item in shopped_items:
                 q_cart.put(item)
         elif user[0] == "ERROR: Invalid safety key.":
