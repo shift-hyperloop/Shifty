@@ -20,7 +20,7 @@ def get_user(rfid):
     return requests.get(f"{url}?event=get_user&rfid={rfid}").text.split(",")
 
 
-def post_purchase_order(rfid, barcode, total_price):
+def post_purchase_order(rfid, barcode_list, total_price):
     """
         rfid: singluar rfid string
         barcode: 1-infinity codes
@@ -28,7 +28,7 @@ def post_purchase_order(rfid, barcode, total_price):
     """
     data = {
         "event": "finish_purchase", "rfid": rfid,
-        "barcode": barcode, "total_price": total_price
+        "barcode": barcode_list, "total_price": total_price
     }
     response = requests.post(url, data=data)
     if response.status_code != 200:
