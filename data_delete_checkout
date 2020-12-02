@@ -1,0 +1,5 @@
+export DJANGO_SECRET_KEY='x44P#RH*9Pt^L8CAWTJP8Rhcxx^uvi37!tlG8toD4SEZ0dDaki'
+export SLACK_API_TOKEN='xoxb-469841790326-1379068982149-yeV4gX28ZaWDEJ1AcbkTSOfF'
+source /home/local/mathiron/Shifty/env/bin/activate
+cd /home/local/mathiron/Shifty/shifty
+python3 manage.py auto_checkout

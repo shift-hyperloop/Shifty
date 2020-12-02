@@ -16,7 +16,6 @@ def product_request(request):
 
         if barcode and safety_key and number_purchased!=None:  # Check if all necessary parameters were passed
             if safety_key == "elonsmusk":  # Check if the correct safety key has been used
-
                 try:
                     item = Products.object.get(barcode=barcode)
                     if number_purchased > 0:
@@ -33,11 +32,10 @@ def product_request(request):
 
                         except Products.DoesNotExist:
                             # user can update name through slack
-                            Products.object.create(name=str(random_id), price=0, amount=0, barcode=barcode)  # create item in database with id
-                            return HttpResponse(str(random_id))  # return the id with a negative sign
-
+                            Products.object.create(name=f"{random_id}",price = 0, amount = 0, barcode=barcode) #create item in database with id
+                            return HttpResponse(str(random_id)) #return the id with a negative sign
             else:
-                response="-1" #return -1 if safety key is wrong
+                return HttpResponse("-1") #return -1 if safety key is wrong
         else:	
             response="-1" #return -1 if somehting was forgotten
         return HttpResponse(response)

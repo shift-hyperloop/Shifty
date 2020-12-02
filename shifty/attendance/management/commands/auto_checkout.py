@@ -16,9 +16,11 @@ class Command(BaseCommand):
         for a in attendances:
             self.send_notification(a)
             setattr(a, 'check_out', current_time)
+            a.save()
 
         at_office = AtOffice.objects.first()
         setattr(at_office, 'at_office', 0)
+        at_office.save()
 
         RFIDView.update_at_office(0)
         RFIDView.office_closed()

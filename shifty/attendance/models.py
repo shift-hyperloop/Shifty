@@ -16,13 +16,10 @@ class RFIDUser(models.Model):
     """
     given_name = models.CharField(max_length=50)
     family_name = models.CharField(max_length=50)
-    phone_mnumber = models.CharField(max_length=18)
     email = models.CharField(max_length=100)
-    rfid = models.CharField(max_length=30)
-    kiosk_balance = models.IntegerField()
-    object = models.Manager()
-    class Meta:
-        verbose_name_plural = "users"
+    rfid = models.CharField(max_length=100)
+    kiosk_balance = models.IntegerField(default=0,)
+    objects = models.Manager()
 
     def __str__(self):
         return f'{self.given_name} {self.family_name}'
@@ -32,3 +29,5 @@ class AtOffice(models.Model):
     Class for AtOffice model
     """
     at_office = models.IntegerField()
+
+
