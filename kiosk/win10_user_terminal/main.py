@@ -144,7 +144,7 @@ def query_rfid_scanner(engine, q_cart):
         else:
             user_rfid = user[0]
             user_name = user[1]
-            balance = user[2]
+            balance = int(user[2])
 
             shopped_items = []
             list_of_barcodes = []
