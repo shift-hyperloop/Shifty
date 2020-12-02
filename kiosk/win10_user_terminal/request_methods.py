@@ -5,7 +5,7 @@ url = "http://shifthyperloop01.it.ntnu.no:8079/kiosk"
 def get_product(barcode):
     """
     Get product from database by barcode
-    returns: [id] if not exists
+    returns: [id] if not exists, which is a placeholder name for the product in the database which has just been created
     else     [barcode, product name, price, number in stock]
     """
     return requests.get(f"{url}?event=get_product&barcode={barcode}").text.split(",")
@@ -14,7 +14,7 @@ def get_product(barcode):
 def get_user(rfid):
     """
     Get user from database by rfid
-    returns: [id] if not exists
+    returns: [id] if not exists, which is a placeholder name for the user in the database which has just been created
     else     [rfid, full name, balance]
     """
     return requests.get(f"{url}?event=get_user&rfid={rfid}").text.split(",")
