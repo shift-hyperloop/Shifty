@@ -4,3 +4,6 @@ django-crispy-forms
 slackclient
 spidev
 evdev
+PyQt5
+requests
+django-annoying

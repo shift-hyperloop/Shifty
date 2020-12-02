@@ -6,17 +6,17 @@ import queue
 import time
 
 
-if __name__ == '__main__':                      # Only if this script is run directly
-    q_rfid = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
-    q_barcode = queue.SimpleQueue()  # Queue used for transferring the intercepted number sequences
-    q_distance = queue.SimpleQueue()  # Queue for distance sensor
+if __name__ == '__main__':      # Only if this script is run directly
+    q_rfid = queue.Queue()      # Queue used for transferring the intercepted number sequences
+    q_barcode = queue.Queue()   # Queue used for transferring the intercepted number sequences
+    q_distance = queue.Queue()  # Queue for distance sensor
 
     #devices = find_USB_devices()
     #RFID_device_path = devices['RFID_device_path']
     #barcode_device_path = devices['barcode_device_path']
 
-    RFID_device_path = r"/dev/input/event2"
-    barcode_device_path = r"/dev/input/event1"
+    RFID_device_path = r"/dev/input/event1"
+    barcode_device_path = r"/dev/input/event0"
 
 
     # creates and starts threads for the RFID scanner and the barcode scanner. Daemon means they won't keep python waiting
@@ -36,12 +36,19 @@ if __name__ == '__main__':                      # Only if this script is run dir
 
     app = Flask(__name__)
 
+
+    @app.route('/init')
+    def init_get():
+        q_rfid.queue.clear()
+        q_distance.queue.clear()
+        q_barcode.queue.clear()
+        return "Success"
+
+
     @app.route('/RFID')
     def rfid_get():
         if q_rfid.qsize():
-            message = q_rfid.get()
-            print(message)
-            return message
+            return q_rfid.get()
         else:
             return "nothing new!"
 
@@ -49,9 +56,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     @app.route('/barcode')
     def barcode_get():
         if q_barcode.qsize():
-            message = q_barcode.get()
-            print(message)
-            return message
+            return q_barcode.get()
         else:
             return "nothing new!"
 
@@ -59,9 +64,7 @@ if __name__ == '__main__':                      # Only if this script is run dir
     @app.route('/distance')
     def distance_get():
         if q_distance.qsize():
-            message = q_distance.get()
-            print(message)
-            return message
+            return q_distance.get()
         else:
             return "nothing new!"
 

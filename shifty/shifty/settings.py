@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'testing',
     "product_request",
     "user_request",
+    "kiosk_endpoint",
 ]
 
 MIDDLEWARE = [
