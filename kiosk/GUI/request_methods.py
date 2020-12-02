@@ -23,7 +23,7 @@ def request_product_data(barcode, bought=0, key="elonsmusk"):
 
 
 """
-returns [name, price, number in stock]
+returns [barcode, name, price, number in stock]
 if item does not exist -> returns negative id between -100 -> -300
  gets added to database with the barcode, change name on internal
  website. Its the frontpage
