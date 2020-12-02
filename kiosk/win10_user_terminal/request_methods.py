@@ -20,7 +20,7 @@ def get_user(rfid):
     return requests.get(f"{url}?event=get_user&rfid={rfid}").text.split(",")
 
 
-def finish_purchase(rfid, barcode, total_price):
+def post_purchase_order(rfid, barcode, total_price):
     """
         rfid: singluar rfid string
         barcode: 1-infinity codes
