@@ -180,11 +180,11 @@ def query_rfid_scanner(engine, q_cart):
                     time.sleep(3)
                     enter_idle_screen(engine)
 
-def main_loop(engine, q_cart, clear_timer):
+def main_loop(engine, q_cart):
 
     query_barcode_scanner(engine, q_cart)
     query_distance_sensor(engine, q_cart)
-    query_rfid_scanner(engine, q_cart, clear_timer)
+    query_rfid_scanner(engine, q_cart)
     update_total_price(engine)
 
 
