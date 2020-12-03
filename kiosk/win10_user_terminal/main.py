@@ -172,7 +172,10 @@ def query_rfid_scanner(engine, q_cart):
                     userstring = mainWindow.findChild(QtCore.QObject, "userstring")
                     userstring.clear()
                     userstring.insert(0, "Purchase complete! Account charged " +tot_purchase_sum+",-")
-                    QtCore.QTimer.singleShot(1500, partial(enter_idle_screen, engine))
+                    clear_timer = QtCore.QTimer(interval = 1500)
+                    clear_timer.setSingleShot(True)
+                    clear_timer.timeout.connect(partial(enter_idle_screen, engine))
+                    clear_timer.start()
 
 
 def main_loop(engine, q_cart):
