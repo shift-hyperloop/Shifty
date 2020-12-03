@@ -11,9 +11,7 @@ from request_methods import *
 
 
 
-def enter_idle_screen(engine, clear_timer):
-
-    clear_timer.stop()
+def enter_idle_screen(engine):
 
     mainWindow = engine.rootObjects()[0]
     mainWindow.findChild(QtCore.QObject, "productString").clear()
@@ -133,7 +131,7 @@ def query_distance_sensor(engine, q_cart):
         basket_delete_last(engine, q_cart)
 
 
-def query_rfid_scanner(engine, q_cart, clear_timer):
+def query_rfid_scanner(engine, q_cart):
 
     response = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
 
@@ -179,8 +177,8 @@ def query_rfid_scanner(engine, q_cart, clear_timer):
                     userstring.clear()
                     userstring.insert(0, "Purchase complete! Charged " + str(tot_purchase_sum)+ ",-")
 
-                    clear_timer.start(3000)
-
+                    time.sleep(3)
+                    enter_idle_screen(engine)
 
 def main_loop(engine, q_cart, clear_timer):
 
@@ -215,7 +213,7 @@ def run():
             time.sleep(10)
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(main_loop, myEngine, q_shopping_cart, clear_timer))
+    timer.timeout.connect(partial(main_loop, myEngine, q_shopping_cart))
     timer.start()
 
     return app.exec_()
