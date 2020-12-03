@@ -9,6 +9,8 @@ from functools import partial
 from request_methods import *
 
 
+
+
 def enter_idle_screen(engine):
 
     mainWindow = engine.rootObjects()[0]
@@ -129,7 +131,7 @@ def query_distance_sensor(engine, q_cart):
         basket_delete_last(engine, q_cart)
 
 
-def query_rfid_scanner(engine, q_cart):
+def query_rfid_scanner(engine, q_cart, clear_timer):
 
     response = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
 
@@ -166,23 +168,23 @@ def query_rfid_scanner(engine, q_cart):
                     mainWindow = engine.rootObjects()[0]
                     mainWindow.findChild(QtCore.QObject, "productString").clear()
                     mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
                     balancestring = mainWindow.findChild(QtCore.QObject, "totalpricestring")
                     balancestring.clear()
                     balancestring.insert(0, "Remaining balance: " + str(balance))
+
                     userstring = mainWindow.findChild(QtCore.QObject, "userstring")
                     userstring.clear()
                     userstring.insert(0, "Purchase complete! Charged " + str(tot_purchase_sum)+ ",-")
-                    clear_timer = QtCore.QTimer()
-                    clear_timer.setSingleShot(True)
-                    clear_timer.timeout.connect(partial(enter_idle_screen, engine))
-                    clear_timer.start(1500)
+
+                    clear_timer.start(3000)
 
 
-def main_loop(engine, q_cart):
+def main_loop(engine, q_cart, clear_timer):
 
     query_barcode_scanner(engine, q_cart)
     query_distance_sensor(engine, q_cart)
-    query_rfid_scanner(engine, q_cart)
+    query_rfid_scanner(engine, q_cart, clear_timer)
     update_total_price(engine)
 
 
@@ -192,6 +194,10 @@ def run():
     myEngine = QtQml.QQmlApplicationEngine(parent=app)
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
+
+    clear_timer = QtCore.QTimer()
+    clear_timer.setSingleShot(True)
+    clear_timer.timeout.connect(partial(enter_idle_screen, myEngine))
 
     q_shopping_cart = queue.Queue()
 
@@ -208,7 +214,7 @@ def run():
             time.sleep(10)
 
     timer = QtCore.QTimer(interval=100)
-    timer.timeout.connect(partial(main_loop, myEngine, q_shopping_cart))
+    timer.timeout.connect(partial(main_loop, myEngine, q_shopping_cart, clear_timer))
     timer.start()
 
     return app.exec_()
