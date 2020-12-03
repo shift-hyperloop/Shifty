@@ -137,7 +137,7 @@ def query_rfid_scanner(engine, q_cart):
 
         user = get_user_data(response)
 
-        if len(user) < 2:
+        if type(user) != list:
             pass
             # TODO: Show user that he was added to database with the id {user}
 
