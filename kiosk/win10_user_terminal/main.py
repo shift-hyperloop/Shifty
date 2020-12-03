@@ -195,9 +195,6 @@ def run():
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    clear_timer = QtCore.QTimer(interval=3000)
-    clear_timer.timeout.connect(partial(enter_idle_screen, myEngine, clear_timer))
-
     q_shopping_cart = queue.Queue()
 
     attempts = 0
