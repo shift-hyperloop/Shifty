@@ -88,7 +88,7 @@ Window {
             width: 266
             height: 67
             text: ""
-            font.pixelSize: 12
+            font.pixelSize: 18
         }
     }
 }
