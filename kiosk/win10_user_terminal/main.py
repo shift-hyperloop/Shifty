@@ -17,7 +17,8 @@ def enter_idle_screen(engine):
     mainWindow.findChild(QtCore.QObject, "productString").clear()
     mainWindow.findChild(QtCore.QObject, "priceString").clear()
     mainWindow.findChild(QtCore.QObject, "totalpricestring").clear()
-    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Scan a card or product to get started!")
+    mainWindow.findChild(QtCore.QObject, "userstring").clear()
+    mainWindow.findChild(QtCore.QObject, "userstring").insert(0, "Scan a card or product to get started!")
 
 
 def exit_idle_screen(engine):
