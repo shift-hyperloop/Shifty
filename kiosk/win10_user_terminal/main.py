@@ -14,11 +14,11 @@ from request_methods import *
 def enter_idle_screen(engine, clear_timer):
 
     clear_timer.stop()
-    
+
     mainWindow = engine.rootObjects()[0]
     mainWindow.findChild(QtCore.QObject, "productString").clear()
     mainWindow.findChild(QtCore.QObject, "priceString").clear()
-    mainWindow.findChild(QtCore.QObject, "totalstring").clear()
+    mainWindow.findChild(QtCore.QObject, "totalpricestring").clear()
     mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Scan a card or product to get started!")
 
 
