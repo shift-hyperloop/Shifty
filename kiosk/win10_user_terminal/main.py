@@ -178,8 +178,8 @@ def query_rfid_scanner(engine, q_cart):
                     userstring.clear()
                     userstring.insert(0, "Purchase complete! Charged " + str(tot_purchase_sum)+ ",-")
 
-                    for i in range(9000):
-                        if i == 8999:
+                    for i in range(90000):
+                        if i == 89999:
                             enter_idle_screen(engine)
                         
 
