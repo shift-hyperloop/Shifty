@@ -11,8 +11,10 @@ from request_methods import *
 
 
 
-def enter_idle_screen(engine):
+def enter_idle_screen(engine, clear_timer):
 
+    clear_timer.stop()
+    
     mainWindow = engine.rootObjects()[0]
     mainWindow.findChild(QtCore.QObject, "productString").clear()
     mainWindow.findChild(QtCore.QObject, "priceString").clear()
@@ -195,9 +197,8 @@ def run():
     directory = os.path.dirname(os.path.abspath(__file__))
     myEngine.load(QtCore.QUrl.fromLocalFile(os.path.join(directory, "main.qml")))
 
-    clear_timer = QtCore.QTimer()
-    clear_timer.setSingleShot(True)
-    clear_timer.timeout.connect(partial(enter_idle_screen, myEngine))
+    clear_timer = QtCore.QTimer(interval=3000)
+    clear_timer.timeout.connect(partial(enter_idle_screen, myEngine, clear_timer))
 
     q_shopping_cart = queue.Queue()
 
