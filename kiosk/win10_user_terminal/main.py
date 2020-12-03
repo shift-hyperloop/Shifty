@@ -166,8 +166,12 @@ def query_rfid_scanner(engine, q_cart):
                     mainWindow = engine.rootObjects()[0]
                     mainWindow.findChild(QtCore.QObject, "productString").clear()
                     mainWindow.findChild(QtCore.QObject, "priceString").clear()
-                    mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(0, "Balance" + balance)
-                    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Purchase successfull! Account charged "+tot_purchase_sum+",-")
+                    balancestring = mainWindow.findChild(QtCore.QObject, "totalpricestring")
+                    balancestring.clear()
+                    balancestring.insert(0, "Balance" + balance)
+                    userstring = mainWindow.findChild(QtCore.QObject, "userstring")
+                    userstring.clear()
+                    userstring.insert(0, "Purchase complete! Account charged " +tot_purchase_sum+",-")
                     QtCore.QTimer.singleShot(1500, partial(enter_idle_screen, engine))
 
 
