@@ -19,7 +19,7 @@ from django.urls import path, include
 
 from attendance.views import RFIDView
 from doorbell.views import doorbell
-from kiosk_endpoint.views import KioskView
+from kiosk_endpoint.views import KioskBackend, ProductOverview, RegisterUser, InsertThemCashMoney
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +28,8 @@ urlpatterns = [
     path('rfid', RFIDView.rfid_endpoint, name='rfid'),
     path('',include("internal_kiosk_website.urls")),
     path('testing/',include("testing.urls")),
-    path('user_request',include('user_request.urls')),
-    path('product_request',include('product_request.urls')),
-    path("kiosk",KioskView.kiosk_endpoint, name="kiosk")
+    path("kiosk",KioskBackend.kiosk_endpoint, name="kiosk_backend"),
+    path("products/",ProductOverview.load_page, name="ProductOverview"),
+    path("register/",RegisterUser.load_page, name="RegisterUser"),
+    path("change_balance/",InsertThemCashMoney.load_page, name="InsertThemCashMoney"),
 ]

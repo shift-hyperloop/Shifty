@@ -1,0 +1,36 @@
+@media (min-width: 567px) {
+    .abs-center-x {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+#logo {
+    width: 10%;
+    z-index:100;
+    position: absolute;
+    display:block;
+/*    left: 44%;*/
+    max-height: 100px;
+    max-width: 100px;
+    margin-left:auto;
+    margin-right: auto;
+    left:0;
+    right:0;
+    text-align: center;
+    min-height: 90px;
+    min-width: 90px;
+}
+
+#shift_navbar {
+    overflow: hidden;
+    z-index: 10;
+    height: 8%;
+    max-height: 100px;
+    margin-bottom: 30px;
+}
+.navbar li{
+    margin-left: 10px;
+}

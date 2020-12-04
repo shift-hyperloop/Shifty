@@ -3,9 +3,12 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from annoying.functions import get_object_or_None
 
+
 import random
+import re
 
 ## import models
 from attendance.models import RFIDUser
@@ -13,7 +16,7 @@ from internal_kiosk_website.models import Products
 import kiosk_endpoint.kiosk_logging
 
 
-class KioskView:
+class KioskBackend:
 
     @staticmethod
     @csrf_exempt
@@ -211,5 +214,112 @@ class KioskView:
                 data[key]["balance_after"], data[key]["balance_before"],
                 data[key]["stock_before_change"], data[key]["stock_after_change"],
             )
-   
+
+class ProductOverview:
+    @staticmethod
+    @login_required
+    @csrf_exempt
+    def load_page(request):
+        if request.method == "POST":
+            data = dict(request.POST)
+            if "csrfmiddlewaretoken" in data.keys():
+                data.pop("csrfmiddlewaretoken",None)
+                for key in list(data.keys())[::-1]: #Change the name last
+                    if '' not in data[key]:
+                        if len(re.findall("[^A-Za-z0-9- ]", data[key][0])) == 0:
+                            name = key.split("_")[0]
+                            item = Products.object.get(name = name)
+                            if "_name" in key:
+                                item.name = data[key][0]
+                                item.save()
+                            elif "_price" in key:
+                                item.price = int(data[key][0])
+                                item.save()
+                            elif "_stock" in key:
+                                item.amount += int(data[key][0])
+                                item.save()
+                        else:
+                            print("weird character found")
+
+        context = {
+            'prods': Products.object.all(),
+        }
+        return render(request,'index.html',context)
+                
+class RegisterUser:
+
+    @staticmethod
+    @login_required
+    # @csrf_exempt
+    def load_page(request):
+        """
+            load register user page
+        """
+        context = {"success": 0}
+        if request.method == "POST":
+            context = RegisterUser.register_user(request)
+
+        return render(request, "register.html", context)
+
+    @staticmethod
+    def register_user(request):
+        """
+        get data from post request
+        register user
+        TODO: deny symbols in name and email
+        """
+        context = {"success": 0}
+        db_id = request.POST.get("db_id")
+        fullname = request.POST.get("fullname").split().append("") #Append empty string incase last name was forgotten
+        email = request.POST.get("email")
+
+        try:
+            balance = int(request.POST.get("balance"))
+        except ValueError:
+            balance = 0
+
+        user = get_object_or_None(RFIDUser, given_name = db_id)
+        if user:
+
+            user.given_name  = fullname[0]
+            user.family_name = fullname[1]
+
+            user.kiosk_balance = balance
+            user.email = email
+            user.save()
+            context = {"success":1}
+
+        return context
+
+
+class InsertThemCashMoney:
+    
+    @staticmethod
+    @login_required
+    # @csrf_exempt
+    def load_page(request):
+        if request.method == "POST":
+            print(request.POST)
+            name = request.POST.get("name")
+            name = name.split(' ')
+            name.append(" ")
+            balance = int(request.POST.get("balance"))
+            print(balance)
+            first_name = name[0]
+            last_name = name[1]
+            print("name",first_name,last_name)
+
+            user = RFIDUser.objects.filter(given_name = first_name).filter(family_name = last_name)
+            if user.exists():
+                print(user[0].given_name)
+                user = RFIDUser.objects.get(rfid = user[0].rfid)
+                user.kiosk_balance += balance
+                user.save()
+                print(user.kiosk_balance+balance,user.kiosk_balance, balance)
+                context = {"error": 0, "name": f"{user.given_name} {user.family_name}"}
+            else:
+                context = {"error":1}
+        else:
+            context = {}
             
+        return render(request, "money.html", context)

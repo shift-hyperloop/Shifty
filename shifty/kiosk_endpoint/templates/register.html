@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<form style="margin:10px;" action="/register/" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id">Id registered in database</label>
+        <input type="text" class="form-control" name="db_id" placeholder="Enter temp id">
+    </div>
+    <div class="form-group">
+        <label for="name">Full name of user</label>
+        <input type="text" class="form-control" name="fullname" placeholder="Enter name">
+    </div>
+    <div class="form-group">
+        <label for="name">Email</label>
+        <input type="text" class="form-control" name="email" placeholder="Enter email">
+    </div>
+    <div class="form-group">
+        <label for="name">Balance</label>
+        <input type="number" class="form-control" name="balance" placeholder="Enter balance">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% if success == 1 %}
+  <p>User added successfully</p>
+{% endif %}
+</form>
+{% endblock%}

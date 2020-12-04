@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<form style="margin:10px;" action="/change_balance/" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Full name of user</label>
+        <input type="text" class="form-control" name="name" placeholder="Enter name">
+    </div>
+    <div class="form-group">
+        <label for="name">Balance</label>
+        <input type="number" class="form-control" name="balance" placeholder="Enter balance">
+    </div>
+    <p>currently disabled because searching for users needs to be fixed. There are two models in db with same name because of our rfid system</p>
+    <button type="submit" class="btn btn-primary" disabled>Submit</button>
+</form>
+
+{% if error == 0 %}
+  <p>Sucessfully added all that ca$h money for {{ name }}<br>
+    bling bling</p>
+{% elif error == 1 %}
+    <p>Something went wrong</p>
+{% endif %}
+</form>
+
+{% endblock%}
