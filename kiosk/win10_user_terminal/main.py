@@ -9,13 +9,16 @@ from functools import partial
 from request_methods import *
 
 
+
+
 def enter_idle_screen(engine):
 
     mainWindow = engine.rootObjects()[0]
     mainWindow.findChild(QtCore.QObject, "productString").clear()
     mainWindow.findChild(QtCore.QObject, "priceString").clear()
-    mainWindow.findChild(QtCore.QObject, "totalstring").clear()
-    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Scan a card or product to get started!")
+    mainWindow.findChild(QtCore.QObject, "totalpricestring").clear()
+    mainWindow.findChild(QtCore.QObject, "userstring").clear()
+    mainWindow.findChild(QtCore.QObject, "userstring").insert(0, "Scan a card or product to get started!")
 
 
 def exit_idle_screen(engine):
@@ -86,11 +89,7 @@ def query_barcode_scanner(engine, q_cart):
 
         # If queue is not empty, request product data from the django database
         else:
-            product = request_product_data(response)
-
-            print(response)
-            for b in product:
-                print(b)
+            product = get_product_data(response)
 
             # If a list with more than one entry is returned, the product exists in the database. Add to basket.
             if len(product) > 1:
@@ -138,38 +137,52 @@ def query_rfid_scanner(engine, q_cart):
     response = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
 
     if response != "nothing new!":
-        mainWindow = engine.rootObjects()[0]
-        mainWindow.findChild(QtCore.QObject, "productString").clear()
-        mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
-        shopped_items = []
-        tot_purchase_sum = 0
-        while q_cart.qsize():
-            shopped_items.append(q_cart.get())
-        for item in shopped_items:
-            tot_purchase_sum += int(item[2])
+        user = get_user_data(response)
 
-        user = request_purchase(response, purchase_sum=tot_purchase_sum)
-
-        if len(user) > 1:  # Money successfully subtracted from account
-
-            # Subtract stock for purchased items
-            for item in shopped_items:
-                request_product_data(item[0], bought=1)
-            # TODO: check for errors
-
-            # Find product and price string in QML, and clear all the entries
-            mainWindow = engine.rootObjects()[0]
-            mainWindow.findChild(QtCore.QObject, "productString").clear()
-            mainWindow.findChild(QtCore.QObject, "priceString").clear()
-
-        elif user[0] == "ERROR: Balance too low for purchase":
-            basket_add(["SEEK HELP", str(user[1]), "0"], engine)  # TODO what to do if no user found?
-            for item in shopped_items:
-                q_cart.put(item)
-        elif user[0] == "ERROR: Invalid safety key.":
-            # TODO: do stuff
+        if type(user) != list:
             pass
+            # TODO: Show user that he was added to database with the id {user}
+
+        else:
+            user_rfid = user[0]
+            user_name = user[1]
+            balance = int(user[2])
+
+            shopped_items = []
+            list_of_barcodes = []
+            tot_purchase_sum = 0
+            while q_cart.qsize():
+                shopped_items.append(q_cart.get())
+            for item in shopped_items:
+                list_of_barcodes.append(item[0])
+                tot_purchase_sum += int(item[2])
+
+            if balance >= tot_purchase_sum:
+                result = post_purchase_order(user_rfid, list_of_barcodes, tot_purchase_sum)
+
+                if not result:  # Unsuccessful purchase
+                    for item in shopped_items:
+                        q_cart.put(item)
+
+                else:  # Successful purchase
+                    mainWindow = engine.rootObjects()[0]
+                    mainWindow.findChild(QtCore.QObject, "productString").clear()
+                    mainWindow.findChild(QtCore.QObject, "priceString").clear()
+
+                    balancestring = mainWindow.findChild(QtCore.QObject, "totalpricestring")
+                    balancestring.clear()
+                    balancestring.insert(0, "Remaining balance: " + str(balance))
+
+                    userstring = mainWindow.findChild(QtCore.QObject, "userstring")
+                    userstring.clear()
+                    userstring.insert(0, "Purchase complete! Charged " + str(tot_purchase_sum)+ ",-")
+
+                    for i in range(90000000):
+                        if i == 89999999:
+                            enter_idle_screen(engine)
+                        else:
+                            pass
 
 
 def main_loop(engine, q_cart):

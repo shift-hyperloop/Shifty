@@ -63,20 +63,22 @@ class KioskView:
                 """
                 barcodes = request.POST.getlist("barcode", None)
                 rfid = request.POST.get("rfid", None)
+                user = RFIDUser.object.get(rfid = rfid)
+
                 logging_object = {}
                 for barcode in barcodes:
                     product = get_object_or_None(Products,barcode = barcode)
-                    logging_object[product.name]=dict()
-                    logging_object[product.name]["price"] = product.price
-                    logging_object[product.name]["stock_before_change"] = product.amount
-                    logging_object[product.name]["barcode"] = product.barcode
-                
-                user = RFIDUser.object.get(rfid = rfid)
-                for key in logging_object.keys():
-                    logging_object[key]["username"] = f"{user.given_name} {user.family_name}"
-                    logging_object[key]["balance_before"] = user.kiosk_balance
-                    logging_object[key]["stock_change"] = 1
-
+                    if logging_object[product.name]:
+                        logging_object[product.name]["stock_change"] += 1
+                    else:
+                        logging_object[product.name]=dict()
+                        logging_object[product.name]["price"] = product.price
+                        logging_object[product.name]["stock_before_change"] = product.amount
+                        logging_object[product.name]["barcode"] = product.barcode
+                        logging_object[product.name]["stock_change"] = 1
+                        logging_object[product.name]["username"] = f"{user.given_name} {user.family_name}"
+                        logging_object[product.name]["balance_before"] = user.kiosk_balance
+                    
                 #Get total price and convert into integer
                 try:
                     total_price = int(request.POST.get("total_price", 0))
