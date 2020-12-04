@@ -175,7 +175,7 @@ class KioskView:
             random_id = str(random.randint(100, 300)) #set random id
             user = get_object_or_None(RFIDUser, given_name = random_id)
             if user == None:
-                RFIDUser.objects.create(given_name=random_id, family_name="",phone_mnumber="",email="", rfid=rfid, kiosk_balance=0) #create user in database with id
+                RFIDUser.objects.create(given_name=random_id, family_name="",email="", rfid=rfid, kiosk_balance=0) #create user in database with id
                 return random_id
         
     @staticmethod
