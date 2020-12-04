@@ -63,12 +63,13 @@ class KioskView:
                 """
                 barcodes = request.POST.getlist("barcode", None)
                 rfid = request.POST.get("rfid", None)
-                user = RFIDUser.object.get(rfid = rfid)
+                user = RFIDUser.objects.get(rfid = rfid)
 
                 logging_object = {}
                 for barcode in barcodes:
                     product = get_object_or_None(Products,barcode = barcode)
-                    if logging_object[product.name]:
+                    print(product)
+                    if product.name in logging_object:
                         logging_object[product.name]["stock_change"] += 1
                     else:
                         logging_object[product.name]=dict()
@@ -84,7 +85,7 @@ class KioskView:
                     total_price = int(request.POST.get("total_price", 0))
                 except ValueError:
                     total_price = 0
-                
+                print(product)
                 # Reduce the amount in stock
                 for product in logging_object.keys():
                     KioskView.change_product_stock(logging_object[product]["barcode"], logging_object[product]["stock_change"])
@@ -93,7 +94,7 @@ class KioskView:
                 KioskView.user_balance(rfid, total_price) #Subract from total
 
                 #Log user balance and product stock after changes
-                user = RFIDUser.object.get(rfid = rfid)
+                user = RFIDUser.objects.get(rfid = rfid)
                 for key in logging_object.keys():
                     product = get_object_or_None(Products,barcode = logging_object[key]["barcode"])
                     logging_object[key]["balance_after"] = user.kiosk_balance
@@ -153,7 +154,7 @@ class KioskView:
     
     @staticmethod
     def user_balance(rfid, balance_change:int):
-        user = RFIDUser.object.get(rfid = rfid)
+        user = RFIDUser.objects.get(rfid = rfid)
         if user.kiosk_balance - balance_change > 0:
             #balance change is negative if we subtract and positive if we add
             user.kiosk_balance -= balance_change
@@ -174,7 +175,7 @@ class KioskView:
             random_id = str(random.randint(100, 300)) #set random id
             user = get_object_or_None(RFIDUser, given_name = random_id)
             if user == None:
-                RFIDUser.object.create(given_name=random_id, family_name="",phone_mnumber="",email="", rfid=rfid, kiosk_balance=0) #create user in database with id
+                RFIDUser.objects.create(given_name=random_id, family_name="",phone_mnumber="",email="", rfid=rfid, kiosk_balance=0) #create user in database with id
                 return random_id
         
     @staticmethod
