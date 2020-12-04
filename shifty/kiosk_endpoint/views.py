@@ -79,7 +79,7 @@ class KioskView:
 
                 #Get total price and convert into integer
                 try:
-                    total_price = abs(int(request.POST.get("total_price", 0)))
+                    total_price = int(request.POST.get("total_price", 0))
                 except ValueError:
                     total_price = 0
                 
@@ -152,9 +152,9 @@ class KioskView:
     @staticmethod
     def user_balance(rfid, balance_change:int):
         user = RFIDUser.object.get(rfid = rfid)
-        if user.kiosk_balance + balance_change > 0:
+        if user.kiosk_balance - balance_change > 0:
             #balance change is negative if we subtract and positive if we add
-            user.kiosk_balance += balance_change
+            user.kiosk_balance -= balance_change
             user.save()
             return True
         else:
