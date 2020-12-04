@@ -208,7 +208,7 @@ class KioskView:
             kiosk_endpoint.kiosk_logging.log_everything(
                 key, data[key]["username"],
                 data[key]["stock_change"], data[key]["price"],
-                data[key]["balance_after"], data[key]["balance_before"],
+                data[key]["balance_before"], data[key]["balance_after"],
                 data[key]["stock_before_change"], data[key]["stock_after_change"],
             )
    
