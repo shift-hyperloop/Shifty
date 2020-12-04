@@ -71,7 +71,6 @@ class KioskBackend:
                 logging_object = {}
                 for barcode in barcodes:
                     product = get_object_or_None(Products,barcode = barcode)
-                    print(product)
                     if product.name in logging_object:
                         logging_object[product.name]["stock_change"] += 1
                     else:
