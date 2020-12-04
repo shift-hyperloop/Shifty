@@ -178,7 +178,7 @@ class KioskBackend:
             random_id = str(random.randint(100, 300)) #set random id
             user = get_object_or_None(RFIDUser, given_name = random_id)
             if user == None:
-                RFIDUser.objects.create(given_name=random_id, family_name="",phone_mnumber="",email="", rfid=rfid, kiosk_balance=0) #create user in database with id
+                RFIDUser.objects.create(given_name=random_id, family_name="",email="", rfid=rfid, kiosk_balance=0) #create user in database with id
                 return random_id
         
     @staticmethod
@@ -211,7 +211,7 @@ class KioskBackend:
             kiosk_endpoint.kiosk_logging.log_everything(
                 key, data[key]["username"],
                 data[key]["stock_change"], data[key]["price"],
-                data[key]["balance_after"], data[key]["balance_before"],
+                data[key]["balance_before"], data[key]["balance_after"],
                 data[key]["stock_before_change"], data[key]["stock_after_change"],
             )
 
