@@ -165,24 +165,17 @@ def query_rfid_scanner(engine, q_cart):
                     for item in shopped_items:
                         q_cart.put(item)
 
+                    engine.rootObjects()[0].findChild(QtCore.QObject, "userstring").clear().insert(0, "Purchase was unsuccessful, try again or get some help.")
+
+
                 else:  # Successful purchase
                     mainWindow = engine.rootObjects()[0]
                     mainWindow.findChild(QtCore.QObject, "productString").clear()
                     mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
-                    balancestring = mainWindow.findChild(QtCore.QObject, "totalpricestring")
-                    balancestring.clear()
-                    balancestring.insert(0, "Remaining balance: " + str(balance))
+                    mainWindow.findChild(QtCore.QObject, "userstring").clear().insert(0, "Purchase complete! Start new transaction by scanning a product.")
 
-                    userstring = mainWindow.findChild(QtCore.QObject, "userstring")
-                    userstring.clear()
-                    userstring.insert(0, "Purchase complete! Charged " + str(tot_purchase_sum)+ ",-")
 
-                    for i in range(90000000):
-                        if i == 89999999:
-                            enter_idle_screen(engine)
-                        else:
-                            pass
 
 
 def main_loop(engine, q_cart):
