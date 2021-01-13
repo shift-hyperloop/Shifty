@@ -41,7 +41,7 @@ class KioskBackend:
                     # If the value inserted cant be converted to a number
                     print("Cannot convert balance to number")
                     return HttpResponse(status = 400)
-                KioskBackend.user_balance(rfid, add_to_balance)
+                KioskView.user_balance(rfid, add_to_balance)
 
             elif kiosk_event == "subtract balance":
                 try:
@@ -51,7 +51,7 @@ class KioskBackend:
                     # If the value inserted cant be converted to a number
                     print("Cannot convert balance to number")
                     return HttpResponse(status = 400)
-                KioskBackend.user_balance(rfid, subtract_from_balance)
+                KioskView.user_balance(rfid, subtract_from_balance)
 
             elif kiosk_event == "finish_purchase":
                 """
@@ -90,10 +90,10 @@ class KioskBackend:
                 print(product)
                 # Reduce the amount in stock
                 for product in logging_object.keys():
-                    KioskBackend.change_product_stock(logging_object[product]["barcode"], logging_object[product]["stock_change"])
+                    KioskView.change_product_stock(logging_object[product]["barcode"], logging_object[product]["stock_change"])
                 
                 #Change balance of user
-                KioskBackend.user_balance(rfid, total_price) #Subract from total
+                KioskView.user_balance(rfid, total_price) #Subract from total
 
                 #Log user balance and product stock after changes
                 user = RFIDUser.objects.get(rfid = rfid)
@@ -103,7 +103,7 @@ class KioskBackend:
                     logging_object[key]["stock_after_change"] = product.amount
 
                 #Log everything
-                KioskBackend.log_object(logging_object) 
+                KioskView.log_object(logging_object) 
                 return HttpResponse(status = 200) #Return all is good
 
             else:
@@ -126,7 +126,7 @@ class KioskBackend:
                     if product == None:
                         # barcode doesn't exist, register product in db with random id
                         # change product on internal website
-                        id = KioskBackend.register_product(barcode)
+                        id = KioskView.register_product(barcode)
                         return HttpResponse(id)
                     else:
                         return HttpResponse(f"{barcode},{product.name},{product.price},{product.amount}")
@@ -145,7 +145,7 @@ class KioskBackend:
                     if user == None:
                         # RFID code doesn't exist, register user in db with random id
                         # user can change name on website(?)
-                        id = KioskBackend.register_user(rfid)
+                        id = KioskView.register_user(rfid)
                         return HttpResponse(id)
                     else:
                         return HttpResponse(f"{rfid}, {user.given_name} {user.family_name}, {user.kiosk_balance}")
