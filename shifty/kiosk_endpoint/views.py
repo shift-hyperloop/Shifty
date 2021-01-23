@@ -157,7 +157,7 @@ class KioskBackend:
     @staticmethod
     def user_balance(rfid, balance_change:int):
         user = RFIDUser.objects.get(rfid = rfid)
-        if user.kiosk_balance - balance_change > 0:
+        if user.kiosk_balance - balance_change >= 0:
             #balance change is negative if we subtract and positive if we add
             user.kiosk_balance -= balance_change
             user.save()
