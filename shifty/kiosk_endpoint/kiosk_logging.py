@@ -1,6 +1,7 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import time
 
 def log_everything(product_name, username, stock_change, price, user_balance_before, user_balance_after, stock_before_change, stock_after_change):
 	"""
@@ -14,7 +15,6 @@ def log_everything(product_name, username, stock_change, price, user_balance_bef
 	stock_before_change  = stock before purchase
 	stock_after_purchase = stock after purchase
 	"""
-
 	#Authorize the API
 	scope = [
 	    'https://www.googleapis.com/auth/drive',
@@ -28,7 +28,6 @@ def log_everything(product_name, username, stock_change, price, user_balance_bef
 
 	row = [datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), username, product_name, stock_change, price, user_balance_before, user_balance_after, stock_before_change, stock_after_change]
 	sheet.insert_row(row, 2) #Insert row as number 2
-
 
 def log_new_products(name):
 	scope = [
