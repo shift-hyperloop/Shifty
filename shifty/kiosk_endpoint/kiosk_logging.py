@@ -28,3 +28,17 @@ def log_everything(product_name, username, stock_change, price, user_balance_bef
 
 	row = [datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), username, product_name, stock_change, price, user_balance_before, user_balance_after, stock_before_change, stock_after_change]
 	sheet.insert_row(row, 2) #Insert row as number 2
+
+
+def log_new_products(name):
+	scope = [
+	    'https://www.googleapis.com/auth/drive',
+	    'https://www.googleapis.com/auth/drive.file'
+	    ]
+	file_name = 'client_id.json'
+	creds = ServiceAccountCredentials.from_json_keyfile_name(file_name,scope)
+	client = gspread.authorize(creds)
+	sheet = client.open('Kiosk Log').worksheet('New products')
+
+	row = [datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), name]
+	sheet.insert_row(row, 2) #Insert row as number 2

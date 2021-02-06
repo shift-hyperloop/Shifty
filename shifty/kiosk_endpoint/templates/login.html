@@ -1,0 +1,20 @@
+{% extends base_template_name %}
+
+{% block main_content %}
+<form style="margin:10px;" action="/login/" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" name="username" placeholder="Username">
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% if error == 1 %}
+  <p style="color:red;margin-left: 10px;"">Error logging in</p>
+{% endif %}
+</form>
+{% endblock%}

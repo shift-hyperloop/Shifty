@@ -19,17 +19,19 @@ from django.urls import path, include
 
 from attendance.views import RFIDView
 from doorbell.views import doorbell
-from kiosk_endpoint.views import KioskBackend, ProductOverview, RegisterUser, InsertThemCashMoney
+from kiosk_endpoint.views import KioskBackend, ProductOverview, RegisterUser, InsertThemCashMoney, DefaultHomePage
+from kiosk_endpoint.views import kiosk_website_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("accounts/",admin.site.urls),
+    # path("accounts/",admin.site.urls),
     path('doorbell', doorbell, name='doorbell'),
     path('rfid', RFIDView.rfid_endpoint, name='rfid'),
-    path('',include("internal_kiosk_website.urls")),
     path('testing/',include("testing.urls")),
     path("kiosk",KioskBackend.kiosk_endpoint, name="kiosk_backend"),
     path("products/",ProductOverview.load_page, name="ProductOverview"),
     path("register/",RegisterUser.load_page, name="RegisterUser"),
     path("change_balance/",InsertThemCashMoney.load_page, name="InsertThemCashMoney"),
+    path("",DefaultHomePage.load_page, name="HomePage"),
+    path("login/", kiosk_website_login, name="LoginPage"),
 ]

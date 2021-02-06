@@ -1,6 +1,7 @@
-{% extends 'base.html' %}
+{% extends base_template_name %}
 
 {% block main_content %}
+
 <center><h1>Shift Hyperloop Super Amazing Incredible Kiosk</h1></center>
 <hr>
 <form action="." method="post">
@@ -13,18 +14,21 @@
       <th scope="col">Price</th>
       <th scope="col">Number of items in stock</th>
       <th scope="col">Add item(+-)</th>
+      <th scope="col">Delete</th>
     </tr>
   </thead>
   <tbody>
       {% for prod in prods %}
         <tr>
           <th scope="row">{{forloop.counter}}</th>
+          
           <td><input name="{{prod.name}}_name" type="text" placeholder="{{prod.name}}"></td>
           <td><input name="{{prod.name}}_price" type="number" placeholder="{{prod.price}}"></td>
           <td>{{prod.amount}}</td>
           <td scope="col">
             <input name="{{prod.name}}_stock" type="number"> 
           </td>
+          <td><input type="checkbox" name="{{prod.name}}_delete"></td>
         </tr>
       {% endfor %}
   </tbody>
@@ -32,5 +36,22 @@
 </table>
 <input type="submit" value="Update data">
 
+{% endblock %}
 
+{% block js %}
+
+  <!-- function confirm(id){
+    confirmation_button = document.getElementById(id);
+    confirmation_button.innerHTML = "<button type='button' class='delete' onclick='delete_item(`{{prod.name}}`)'>Press again to confirm</button>"
+  }
+
+  function delete_item(id, csrf_token){
+    formdata = new FormData();
+    formdata.append("data[hello]","nah")
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/products/", true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(formdata);
+  } -->
 {% endblock %}

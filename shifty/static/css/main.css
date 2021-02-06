@@ -34,3 +34,10 @@
 .navbar li{
     margin-left: 10px;
 }
+
+.delete{
+    color:red;
+}
+.delete:hover{
+    background:rgb(224, 224, 224);
+}

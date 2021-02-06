@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "internal_kiosk_website",
     'testing',
     "kiosk_endpoint",
-    "product_overview"
 ]
 
 MIDDLEWARE = [

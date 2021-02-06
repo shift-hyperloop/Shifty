@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends base_template_name  %}
 
 {% block main_content %}
 <form style="margin:10px;" action="/register/" method="post">
@@ -21,7 +21,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-
 {% if success == 1 %}
   <p>User added successfully</p>
 {% endif %}
