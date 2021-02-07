@@ -74,6 +74,7 @@ class KioskBackend:
                 logging_object = {}
                 for barcode in barcodes:
                     product = get_object_or_None(Products,barcode = barcode)
+
                     if product.name in logging_object:
                         logging_object[product.name]["stock_change"] += 1
                     else:
@@ -92,7 +93,7 @@ class KioskBackend:
                      #Change balance of user
                     KioskBackend.user_balance(rfid, total_price) #Subract from total
                 except ValueError:
-                    #something is wrongw with the price input
+                    #something is wrong with the price input
                     total_price = f"ERROR!! {request.POST.get('total_price', 0)}"
                 # print(product)
                 # Reduce the amount in stock
@@ -397,3 +398,17 @@ def kiosk_website_login(request):
             context["error"] = 1
     
     return render(request, "login.html", context)
+
+class ExtraLog:
+    """
+    A way to directly read the local product log on the website
+    """
+    @staticmethod
+    def load_page(request):
+        if not request.user.is_authenticated:
+            return redirect("/")
+
+        local_log_file =  open("local_product_log.txt", 'r') 
+        response = HttpResponse(local_log_file.read(), content_type='text/plain')
+        response['Content-Disposition'] = 'inline;filename=local_product_log.txt'
+        return response
