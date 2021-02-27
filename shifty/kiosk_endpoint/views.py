@@ -94,7 +94,7 @@ class KioskBackend:
                     KioskBackend.user_balance(rfid, total_price) #Subract from total
                 except ValueError:
                     #something is wrong with the price input
-                    total_price = f"ERROR!! {request.POST.get('total_price', 0)}"
+                    total_price = f"ERROR!! {request.POST.get('total_price',0)}"
                 # print(product)
                 # Reduce the amount in stock
                 for product in logging_object.keys():
@@ -260,7 +260,7 @@ class ProductOverview:
                         product.price = int(form_data[name][key])
                     elif key == "stock":
                         #Change product stock
-                        product.stock += int(form_data[name][key])
+                        product.amount += int(form_data[name][key])
                     elif key == "delete":
                         #make product ready for deletion
                         #might change later but makes sense for now
