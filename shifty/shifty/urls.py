@@ -20,7 +20,7 @@ from django.urls import path, include
 from attendance.views import RFIDView
 from doorbell.views import doorbell
 from kiosk_endpoint.views import KioskBackend, ProductOverview, RegisterUser, InsertThemCashMoney, DefaultHomePage
-from kiosk_endpoint.views import kiosk_website_login, ExtraLog
+from kiosk_endpoint.views import kiosk_website_login, ExtraLog, Statistics
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +32,7 @@ urlpatterns = [
     path("products/",ProductOverview.load_page, name="ProductOverview"),
     path("register/",RegisterUser.load_page, name="RegisterUser"),
     path("change_balance/",InsertThemCashMoney.load_page, name="InsertThemCashMoney"),
+    path("statistics/",Statistics.load_page, name="Statistics"),
     path("",DefaultHomePage.load_page, name="HomePage"),
     path("login/", kiosk_website_login, name="LoginPage"),
     path("extra_log/", ExtraLog.load_page, name="LoginPage")

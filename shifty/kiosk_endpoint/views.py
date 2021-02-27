@@ -412,3 +412,27 @@ class ExtraLog:
         response = HttpResponse(local_log_file.read(), content_type='text/plain')
         response['Content-Disposition'] = 'inline;filename=local_product_log.txt'
         return response
+
+class Statistics:
+    @staticmethod
+    def load_page(request):
+        if not request.user.is_authenticated:
+            return redirect("/")
+
+        users_in_db = RFIDUser.objects.all()
+
+        context={"base_template_name":"base_authenticated.html"}
+        total = 0
+        max_loops = 0
+        for user in users_in_db:
+            user_balance = user.kiosk_balance
+            if user_balance > max_loops:
+                max_loops = user_balance
+                high_score = f"{user.given_name} {user.family_name}"
+            total += user_balance
+
+
+        context["total_loops"] = total
+        context["highscore_name"] = high_score
+        context["highscore_balance"] = max_loops
+        return render(request, "statistics.html", context)
