@@ -139,8 +139,8 @@ mydatabase
 # Pycharm
 .idea/
 
-
 kiosk/win10_user_terminal/log.txt
 command.txt
 product_error.txt
-
+shifty/local_product_log.txt
+shifty/start_server.sh

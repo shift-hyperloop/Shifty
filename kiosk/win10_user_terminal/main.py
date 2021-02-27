@@ -35,12 +35,15 @@ def update_total_price(engine):
         mainWindow.findChild(QtCore.QObject, "totalpricestring").clear().insert(total_price_string)
 
 
-def basket_add(product, engine, q_cart):
-
+def basket_add(product, engine, q_cart): 
+    
     # Find product and price string in QML
     mainWindow = engine.rootObjects()[0]
     product_string = mainWindow.findChild(QtCore.QObject, "productString")
     price_string = mainWindow.findChild(QtCore.QObject, "priceString")
+
+    # Clear userstring of previous transaction status message
+    mainWindow.findChild(QtCore.QObject, "userstring").clear()
 
     # Find product name and price to be added
     product_barcode = product[0]
@@ -165,24 +168,22 @@ def query_rfid_scanner(engine, q_cart):
                     for item in shopped_items:
                         q_cart.put(item)
 
+                    mainWindow = engine.rootObjects()[0]
+                    userString = mainWindow.findChild(QtCore.QObject, "userstring")
+                    userString.clear()
+                    userString.insert(0, "Purchase was unsuccessful, try again or get some help.")
+
+
                 else:  # Successful purchase
                     mainWindow = engine.rootObjects()[0]
                     mainWindow.findChild(QtCore.QObject, "productString").clear()
                     mainWindow.findChild(QtCore.QObject, "priceString").clear()
 
-                    balancestring = mainWindow.findChild(QtCore.QObject, "totalpricestring")
-                    balancestring.clear()
-                    balancestring.insert(0, "Remaining balance: " + str(balance))
+                    userString = mainWindow.findChild(QtCore.QObject, "userstring")
+                    userString.clear()
+                    userString.insert(0, "Purchase complete! Start new transaction by scanning a product.")
 
-                    userstring = mainWindow.findChild(QtCore.QObject, "userstring")
-                    userstring.clear()
-                    userstring.insert(0, "Purchase complete! Charged " + str(tot_purchase_sum)+ ",-")
 
-                    for i in range(90000000):
-                        if i == 89999999:
-                            enter_idle_screen(engine)
-                        else:
-                            pass
 
 
 def main_loop(engine, q_cart):

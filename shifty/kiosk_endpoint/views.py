@@ -5,10 +5,13 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from annoying.functions import get_object_or_None
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login
 
 
 import random
 import re
+import threading
 
 ## import models
 from attendance.models import RFIDUser
@@ -71,6 +74,7 @@ class KioskBackend:
                 logging_object = {}
                 for barcode in barcodes:
                     product = get_object_or_None(Products,barcode = barcode)
+
                     if product.name in logging_object:
                         logging_object[product.name]["stock_change"] += 1
                     else:
@@ -85,16 +89,17 @@ class KioskBackend:
                 #Get total price and convert into integer
                 try:
                     total_price = int(request.POST.get("total_price", 0))
+                    
+                     #Change balance of user
+                    KioskBackend.user_balance(rfid, total_price) #Subract from total
                 except ValueError:
-                    total_price = 0
-                print(product)
+                    #something is wrong with the price input
+                    total_price = f"ERROR!! {request.POST.get('total_price', 0)}"
+                # print(product)
                 # Reduce the amount in stock
                 for product in logging_object.keys():
                     KioskBackend.change_product_stock(logging_object[product]["barcode"], logging_object[product]["stock_change"])
                 
-                #Change balance of user
-                KioskBackend.user_balance(rfid, total_price) #Subract from total
-
                 #Log user balance and product stock after changes
                 user = RFIDUser.objects.get(rfid = rfid)
                 for key in logging_object.keys():
@@ -103,7 +108,11 @@ class KioskBackend:
                     logging_object[key]["stock_after_change"] = product.amount
 
                 #Log everything
-                KioskBackend.log_object(logging_object) 
+                # spawn a thread that can finish the logging while the main thread can give the post response
+                # logging is a bit slow, which is why we need to spawn a new thread
+                logging_thread = threading.Thread(target = KioskBackend.log_object,args=(logging_object,)) 
+                logging_thread.start()
+
                 return HttpResponse(status = 200) #Return all is good
 
             else:
@@ -215,48 +224,78 @@ class KioskBackend:
             )
 
 class ProductOverview:
+    #TODO:
+    #Logging events
+    #Deleting items
+
     @staticmethod
-    @login_required
+    # @login_required
     @csrf_exempt
     def load_page(request):
         if request.method == "POST":
-            data = dict(request.POST)
-            if "csrfmiddlewaretoken" in data.keys():
-                data.pop("csrfmiddlewaretoken",None)
-                for key in list(data.keys())[::-1]: #Change the name last
-                    if '' not in data[key]:
-                        if len(re.findall("[^A-Za-z0-9- ]", data[key][0])) == 0:
-                            name = key.split("_")[0]
-                            item = Products.object.get(name = name)
-                            if "_name" in key:
-                                item.name = data[key][0]
-                                item.save()
-                            elif "_price" in key:
-                                item.price = int(data[key][0])
-                                item.save()
-                            elif "_stock" in key:
-                                item.amount += int(data[key][0])
-                                item.save()
-                        else:
-                            print("weird character found")
+            # Split data form into a dictionary for each product
+            form_data = {}
+            delete_list = []
+            for key in request.POST.keys():
+                if len(key.split("_"))!=2:
+                    continue
+                name, keyword = key.split("_")
+                if name not in form_data:
+                    form_data[name] = {}
+                form_data[name][keyword] = request.POST[key]
+
+            for name in form_data:
+                #iterate though products: coke, daim, etc...
+                product = Products.object.get(name = name)
+                for key in form_data[name].keys():
+                    #Look for change in parameters: name, price, stock, delete?
+                    if form_data[name][key] == '':
+                        #if no change, go to next
+                        continue
+                    if len(re.findall("[^A-Za-z0-9- !]", form_data[name][key])):
+                        #Check for weird characters
+                        continue
+                    if key == "price":
+                        #change price
+                        product.price = int(form_data[name][key])
+                    elif key == "stock":
+                        #Change product stock
+                        product.amount += int(form_data[name][key])
+                    elif key == "delete":
+                        #make product ready for deletion
+                        #might change later but makes sense for now
+                        delete_list.append(name)
+                        break
+                    elif key == "name":
+                        #change product name
+                        product.name = form_data[name][key]
+                product.save()
+
+            print(delete_list)
+
+        if not request.user.is_authenticated:
+            return redirect("/")
 
         context = {
             'prods': Products.object.all(),
+            "base_template_name": "base_authenticated.html",
+            
         }
-        return render(request,'index.html',context)
+        return render(request,'products.html',context)
                 
 class RegisterUser:
 
     @staticmethod
-    @login_required
-    # @csrf_exempt
     def load_page(request):
         """
             load register user page
         """
-        context = {"success": 0}
+        context = {"base_template_name": "base_authenticated.html"}
         if request.method == "POST":
-            context = RegisterUser.register_user(request)
+            context["success"] = RegisterUser.register_user(request)
+        
+        if not request.user.is_authenticated:
+            return redirect("/")
 
         return render(request, "register.html", context)
 
@@ -265,11 +304,18 @@ class RegisterUser:
         """
         get data from post request
         register user
+        can only change a user already in the database, not create a new one.
+        Automatic register with random id first time RFID scanned
         TODO: deny symbols in name and email
         """
-        context = {"success": 0}
-        db_id = request.POST.get("db_id")
-        fullname = request.POST.get("fullname").split().append("") #Append empty string incase last name was forgotten
+        database_temp_id = request.POST.get("db_id")
+        fullname         = request.POST.get("fullname").split() #Append empty string incase last name was forgotten
+        if len(fullname) == 1: #if a last name is not given add an empty space
+            fullname.append(" ")
+        elif len(fullname) > 2: # If multiple names, add one first name, and the others as family name
+            temp = [fullname[0]]
+            temp.extend([name for name in fullname[1:]])
+
         email = request.POST.get("email")
 
         try:
@@ -277,7 +323,7 @@ class RegisterUser:
         except ValueError:
             balance = 0
 
-        user = get_object_or_None(RFIDUser, given_name = db_id)
+        user = get_object_or_None(RFIDUser, given_name = database_temp_id)
         if user:
 
             user.given_name  = fullname[0]
@@ -286,39 +332,83 @@ class RegisterUser:
             user.kiosk_balance = balance
             user.email = email
             user.save()
-            context = {"success":1}
+            return 1
 
-        return context
-
+        return 0
 
 class InsertThemCashMoney:
     
     @staticmethod
-    @login_required
-    # @csrf_exempt
     def load_page(request):
+        context={"base_template_name":"base_authenticated.html"}
+        
+        if not request.user.is_authenticated:
+            return redirect("/")
         if request.method == "POST":
-            print(request.POST)
             name = request.POST.get("name")
             name = name.split(' ')
             name.append(" ")
             balance = int(request.POST.get("balance"))
-            print(balance)
             first_name = name[0]
             last_name = name[1]
-            print("name",first_name,last_name)
 
             user = RFIDUser.objects.filter(given_name = first_name).filter(family_name = last_name)
             if user.exists():
-                print(user[0].given_name)
                 user = RFIDUser.objects.get(rfid = user[0].rfid)
                 user.kiosk_balance += balance
                 user.save()
                 print(user.kiosk_balance+balance,user.kiosk_balance, balance)
-                context = {"error": 0, "name": f"{user.given_name} {user.family_name}"}
+                context["name"] = f"{user.given_name} {user.family_name}"
             else:
-                context = {"error":1}
-        else:
-            context = {}
+                context["error"] = 1
             
         return render(request, "money.html", context)
+
+class DefaultHomePage:
+
+    @staticmethod
+    def load_page(request):
+        context = {}
+        if not request.user.is_authenticated:
+            context["base_template_name"] = "base_not_auth.html"
+        else:
+            context["base_template_name"] = "base_authenticated.html"
+
+        return render(request, "home.html", context)
+
+# class StatisticView:
+
+#     @staticmethod
+#     def load_page(request):
+
+def kiosk_website_login(request):
+    if request.user.is_authenticated:
+        return redirect("/")
+
+    context = {"base_template_name":"base_not_auth.html"}
+
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("/")
+        else:
+            context["error"] = 1
+    
+    return render(request, "login.html", context)
+
+class ExtraLog:
+    """
+    A way to directly read the local product log on the website
+    """
+    @staticmethod
+    def load_page(request):
+        if not request.user.is_authenticated:
+            return redirect("/")
+
+        local_log_file =  open("local_product_log.txt", 'r') 
+        response = HttpResponse(local_log_file.read(), content_type='text/plain')
+        response['Content-Disposition'] = 'inline;filename=local_product_log.txt'
+        return response
