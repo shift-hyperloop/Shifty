@@ -18,7 +18,8 @@ class RFIDUser(models.Model):
     family_name = models.CharField(max_length=50)
     email = models.CharField(max_length=100)
     rfid = models.CharField(max_length=100)
-    kiosk_balance = models.IntegerField(default=0,)
+    kiosk_balance = models.IntegerField(default=0)
+    # used_in_kiosk = models.IntegerField(default=0)
     objects = models.Manager()
 
     def __str__(self):
