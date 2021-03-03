@@ -75,7 +75,7 @@ Window {
             y: 55
             width: 435
             height: 67
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignLeft
             text: ""
             font.pixelSize: 18
         }
