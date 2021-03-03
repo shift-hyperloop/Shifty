@@ -142,6 +142,7 @@ def query_rfid_scanner(engine, q_cart):
     mainWindow = engine.rootObjects()[0]
     userString = mainWindow.findChild(QtCore.QObject, "userstring")
     if(time_start > 100):
+        time_start = 0
         userString.clear()
         while not q_cart.empty():
             q_cart.get()
