@@ -106,6 +106,8 @@ def query_barcode_scanner(engine, q_cart):
             elif int(product[0]) == -1:
                 pass
 
+            #print("New item")
+
 
 def query_distance_sensor(engine, q_cart):
 
@@ -133,30 +135,33 @@ def query_distance_sensor(engine, q_cart):
 
     elif delete_last:
         basket_delete_last(engine, q_cart)
+        
+    #print("dELETE CART")
 
 
 def query_rfid_scanner(engine, q_cart):
     global time_start
-    time_start+=1
+    time_start += 1
     response = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
     mainWindow = engine.rootObjects()[0]
     userString = mainWindow.findChild(QtCore.QObject, "userstring")
+    #print(time_start)
     if(time_start > 100):
         time_start = 0
         userString.clear()
-        while not q_cart.empty():
-            q_cart.get()
+        #print("Restart counter")
+        basket_delete_all(engine, q_cart)
 
     if response != "nothing new!":
         time_start=0
         user = get_user_data(response)
         
-                    
+        print(user)   
         if type(user) != list:
             pass
             # TODO: Show user that he was added to database with the id {user}
-
         else:
+
             user_rfid = user[0]
             user_name = user[1]
             balance = int(user[2])
@@ -171,6 +176,7 @@ def query_rfid_scanner(engine, q_cart):
                 tot_purchase_sum += int(item[2])
 
             if balance >= tot_purchase_sum:
+                print(list(q_cart.queue))
                 result = post_purchase_order(user_rfid, list_of_barcodes, tot_purchase_sum)
 
                 if not result:  # Unsuccessful purchase
@@ -194,12 +200,15 @@ def query_rfid_scanner(engine, q_cart):
                     else:
                         userString.insert(0, f"Purchase complete! Start new transaction by scanning a product. \n Balance is {balance-tot_purchase_sum}")
                     userString.setProperty("horizontalAlignment", "AlignLeft")
+                    userString.setProperty("color", "black")
             else:
                 userString.clear()
                 mainWindow.findChild(QtCore.QObject, "productString").clear()
                 mainWindow.findChild(QtCore.QObject, "priceString").clear()
                 basket_delete_all(engine, q_cart)
                 userString.insert(0, "You dont have enough in your balance. This message dissapears in a little bit")
+                userString.setProperty("color", "red")
+        print(list(q_cart.queue))
                 
                 
 
@@ -210,7 +219,8 @@ def query_rfid_scanner(engine, q_cart):
 def main_loop(engine, q_cart):
 
     query_barcode_scanner(engine, q_cart)
-    query_distance_sensor(engine, q_cart)
+    #Use with care...
+    #query_distance_sensor(engine, q_cart)
     query_rfid_scanner(engine, q_cart)
     update_total_price(engine)
 
