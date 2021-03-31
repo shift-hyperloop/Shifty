@@ -112,7 +112,7 @@ class KioskBackend:
                 # logging is a bit slow, which is why we need to spawn a new thread
                 logging_thread = threading.Thread(target = KioskBackend.log_object,args=(logging_object,)) 
                 logging_thread.start()
-
+                print(logging_object)
                 return HttpResponse(status = 200) #Return all is good
 
             else:
