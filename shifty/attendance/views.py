@@ -46,7 +46,9 @@ class RFIDView:
                     at_office_obj.save()
                     return JsonResponse(dict(success=True, type='check_in'))
 
-                elif attendance.check_out:channel_id = "C01BV9EHN48"
+                elif attendance.check_out:
+                    Attendance.objects.create(user=user, check_in=current_time)
+                    at_office_num = at_office_obj.at_office
                     at_office_num += 1
                    # RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
