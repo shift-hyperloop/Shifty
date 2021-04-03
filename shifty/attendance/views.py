@@ -38,8 +38,6 @@ class RFIDView:
                 if not attendance:
                     Attendance.objects.create(user=user, check_in=current_time)
                     at_office_num = at_office_obj.at_office
-                    if at_office_num == 0:
-                        RFIDView.office_opened()
                     at_office_num += 1
                     RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
@@ -56,10 +54,7 @@ class RFIDView:
                     return JsonResponse(dict(success=True, type='check_in'))
 
                 else:
-                    
                     at_office_num = at_office_obj.at_office
-                    if at_office_num == 1:
-                        RFIDView.office_closed()
                     at_office_num -= 1
                     RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
@@ -92,40 +87,19 @@ class RFIDView:
         except SlackApiError as e:
             print("Error creating conversation: {}".format(e))
 
-    @staticmethod
-    def office_opened():
-        RFIDView._delete_messages()
-        slack_api_token = os.environ.get('SLACK_API_TOKEN')
-        client = WebClient(token=slack_api_token)
-        channel_id = "C01BV9EHN48"
-
-        try:
-            client.chat_postMessage(channel=channel_id, text='Office is OPEN! :green_apple:')
-        except SlackApiError as e:
-            print("Error posting message: {}".format(e))
-
-
-    @staticmethod
-    def office_closed():
-        RFIDView._delete_messages()
-        slack_api_token = os.environ.get('SLACK_API_TOKEN')
-        client = WebClient(token=slack_api_token)
-        channel_id = "C01BV9EHN48"
-
-        try:
-            client.chat_postMessage(channel=channel_id, text='Office is CLOSED! :red_circle:')
-        except SlackApiError as e:
-            print("Error posting message: {}".format(e))
-
     
     @staticmethod
     def update_at_office(at_office: int):
+        RFIDView._delete_messages()
         slack_api_token = os.environ.get('SLACK_API_TOKEN')
         client = WebClient(token=slack_api_token)
         channel_id = "C01BV9EHN48"
 
         try:
-            client.chat_postMessage(channel=channel_id, text=f'Currently at office: {at_office}')
+            if at_office > 0:
+                client.chat_postMessage(channel=channel_id, text=f'Office is OPEN! :green_apple: Currently at office: {at_office}')
+            else:
+                client.chat_postMessage(channel=channel_id, text=f'Office is CLOSED!')
         except SlackApiError as e:
             print("Error posting message: {}".format(e))
 
