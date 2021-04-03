@@ -38,10 +38,10 @@ class RFIDView:
                 if not attendance:
                     Attendance.objects.create(user=user, check_in=current_time)
                     at_office_num = at_office_obj.at_office
-                   # if at_office_num == 0:
-                    #    RFIDView.office_opened()
+                    if at_office_num == 0:
+                        RFIDView.office_opened()
                     at_office_num += 1
-                    #RFIDView.update_at_office(at_office_num)
+                    RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
                     return JsonResponse(dict(success=True, type='check_in'))
@@ -50,7 +50,7 @@ class RFIDView:
                     Attendance.objects.create(user=user, check_in=current_time)
                     at_office_num = at_office_obj.at_office
                     at_office_num += 1
-                   # RFIDView.update_at_office(at_office_num)
+                    RFIDView.update_at_office(at_office_num)
                     setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
                     return JsonResponse(dict(success=True, type='check_in'))
@@ -58,11 +58,11 @@ class RFIDView:
                 else:
                     
                     at_office_num = at_office_obj.at_office
-                    #if at_office_num == 1:
-                     #   RFIDView.office_closed()
+                    if at_office_num == 1:
+                        RFIDView.office_closed()
                     at_office_num -= 1
-                   # RFIDView.update_at_office(at_office_num)
-                   # setattr(at_office_obj, 'at_office', at_office_num) 
+                    RFIDView.update_at_office(at_office_num)
+                    setattr(at_office_obj, 'at_office', at_office_num) 
                     at_office_obj.save()
                     setattr(attendance, 'check_out', current_time)
                     attendance.save()
