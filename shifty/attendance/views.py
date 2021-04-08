@@ -1,4 +1,9 @@
+import sys
 import os
+print (os.getcwd())
+sys.path.append("..")
+sys.path.append(".")
+
 import datetime
 
 from django.http import JsonResponse
@@ -9,6 +14,8 @@ from slack.errors import SlackApiError
 
 from .models import Attendance, AtOffice
 from .models import RFIDUser
+
+from utils.logger import create_logger
 
 class RFIDView:
     """
@@ -68,6 +75,7 @@ class RFIDView:
 
     @staticmethod
     def _delete_messages():
+        logger = create_logger()
         slack_api_token = os.environ.get('SLACK_API_TOKEN')
         client = WebClient(token=slack_api_token)
 
@@ -85,11 +93,12 @@ class RFIDView:
                 client.chat_delete(channel=channel_id, ts=m_ts)
 
         except SlackApiError as e:
-            print("Error creating conversation: {}".format(e))
+            logger.debug("Error deleting conversation history: {}".format(e))
 
     
     @staticmethod
     def update_at_office(at_office: int):
+        logger = create_logger()
         RFIDView._delete_messages()
         slack_api_token = os.environ.get('SLACK_API_TOKEN')
         client = WebClient(token=slack_api_token)
@@ -101,7 +110,7 @@ class RFIDView:
             else:
                 client.chat_postMessage(channel=channel_id, text=f'Office is CLOSED!')
         except SlackApiError as e:
-            print("Error posting message: {}".format(e))
+            logger.debug("Error posting message: {}".format(e))
 
 
 
