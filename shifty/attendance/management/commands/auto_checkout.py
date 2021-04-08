@@ -23,7 +23,6 @@ class Command(BaseCommand):
         at_office.save()
 
         RFIDView.update_at_office(0)
-        RFIDView.office_closed()
 
         Attendance.objects.filter(check_in__lte=datetime.datetime.now() - datetime.timedelta(days=10)).delete()
 
@@ -37,6 +36,9 @@ class Command(BaseCommand):
             if 'first_name' in keys and 'last_name' in keys:
                 if profile['first_name'] == attendance.user.given_name and profile['last_name'] == attendance.user.family_name:
                     user_id = user['id']
-                    client.chat_postMessage(channel=user_id, as_user=True, text=':red_circle: You forgot to check out of the office during your last visit!')
-
+                    try:
+                        client.chat_postMessage(channel=user_id, as_user=True, text=':red_circle: You forgot to check out of the office during your last visit!')
+                    except Exception as e:
+                        name = profile['first_name'] + profile['last_name']
+                        print('Unable to send message to user ', name)
         
