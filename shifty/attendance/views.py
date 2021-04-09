@@ -25,22 +25,25 @@ class RFIDView:
     @staticmethod
     @csrf_exempt
     def rfid_endpoint(request):
+        logger = create_logger()
+
+        # Rasperry Pi posts rfid to this endpoint
         if request.method == 'POST':
             rfid = request.POST['rfid']
             try:
-                print(f"rfid: {rfid}")
+                # Try to get user if exists
+                logger.info(f"User registered with RFID: {rfid}")
                 user = RFIDUser.objects.get(rfid=rfid)
-                print("user found")
-            except Exception as e:
+            except Exception:
+                # User not found, register manually by looking at log
                 user = None
-                print("found = none")
-            if user:
+                logger.info(f"User with RFID: {rfid} not found")
 
+            if user:
                 current_time = datetime.datetime.now()
 
                 attendance = Attendance.objects.filter(user=user).order_by('-check_in').first()
                 at_office_obj = AtOffice.objects.all().first()
-                print(attendance)
 
                 if not attendance:
                     Attendance.objects.create(user=user, check_in=current_time)
