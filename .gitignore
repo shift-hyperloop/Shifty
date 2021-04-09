@@ -144,3 +144,4 @@ command.txt
 product_error.txt
 shifty/local_product_log.txt
 shifty/start_server.sh
+logs

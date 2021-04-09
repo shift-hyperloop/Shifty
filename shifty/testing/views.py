@@ -5,8 +5,11 @@ from django.http.response import HttpResponse
 from slack import WebClient
 from django.views.decorators.csrf import csrf_exempt
 
+from utils.logger import create_logger
+
 @csrf_exempt
 def testing(request):
+	logger = create_logger()
 	client = WebClient(token=os.environ.get('SLACK_API_TOKEN'))
 	if request.method == "POST":
 		user_id = request.POST['user_id']
@@ -20,7 +23,7 @@ def testing(request):
 		print(f'Phone: {phone}')
 	elif request.method == "GET":
 		os.system(f"wall 'Yo bendik, this is a get: {request}'")
-		print(f"GET req: {request}")
+		logger.debug(f"GET req: {request}")
 
 	return HttpResponse(status=418)
 # Create your views here.

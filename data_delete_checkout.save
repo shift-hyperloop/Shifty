@@ -1,3 +1,0 @@
-export DJANGO_SECRET_KEY='DJANGO_SECRET_KEY 
-source /home/local/mathiron/Shifty/env/bin/activate
-sudo python3 /home/local/mathiron/Shifty/shifty/manage.py auto_checkout

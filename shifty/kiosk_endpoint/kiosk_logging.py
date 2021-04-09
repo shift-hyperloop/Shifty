@@ -3,6 +3,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import time
 
+from utils.logger import create_logger
+
 def log_everything(product_name, username, stock_change, price, user_balance_before, user_balance_after, stock_before_change, stock_after_change):
 	"""
 	Inputs:
@@ -31,13 +33,11 @@ def log_everything(product_name, username, stock_change, price, user_balance_bef
 	except:
 		"""
 		If we for some reason cannot write to online log,
-		we will write to a local log. This will be available at:
-		/extra_log
+		we will write to a local log. This will be available at: ${SHIFTY_LOG_PATH}
 		"""
-		with open("local_product_log.txt",'a') as f:
-			for item in row:
-				f.write(f"{item} ")
-			f.write("\n")
+		logger = create_logger()
+		log_message = ', '.join(row)
+		logger.info(f'KIOSK: {log_message}')
 
 def log_new_products(name):
 	scope = [

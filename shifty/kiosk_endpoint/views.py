@@ -18,6 +18,8 @@ from attendance.models import RFIDUser
 from internal_kiosk_website.models import Products
 import kiosk_endpoint.kiosk_logging
 
+from utils.logger import get_current_log_filepath
+
 
 class KioskBackend:
 
@@ -408,7 +410,7 @@ class ExtraLog:
         if not request.user.is_authenticated:
             return redirect("/")
 
-        local_log_file =  open("local_product_log.txt", 'r') 
+        local_log_file =  open(get_current_log_filepath(), 'r') 
         response = HttpResponse(local_log_file.read(), content_type='text/plain')
         response['Content-Disposition'] = 'inline;filename=local_product_log.txt'
         return response
