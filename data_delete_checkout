@@ -1,4 +1,5 @@
-source /home/local/mathiron/Shifty/env/bin/activate
-. ./.env
-cd /home/local/mathiron/Shifty/shifty
+#! /bin/bash
+source /opt/Shifty/env/bin/activate
+. /opt/Shifty/.env
+cd /opt/Shifty/shifty
 python3 manage.py auto_checkout

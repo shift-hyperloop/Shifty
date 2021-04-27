@@ -14,13 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-
+from django.urls import path, re_path, include
+from django.views.static import serve
 
 from attendance.views import RFIDView
 from doorbell.views import doorbell
 from kiosk_endpoint.views import KioskBackend, ProductOverview, RegisterUser, InsertThemCashMoney, DefaultHomePage
 from kiosk_endpoint.views import kiosk_website_login, ExtraLog, Statistics
+from shifty import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,5 +36,6 @@ urlpatterns = [
     path("statistics/",Statistics.load_page, name="Statistics"),
     path("",DefaultHomePage.load_page, name="HomePage"),
     path("login/", kiosk_website_login, name="LoginPage"),
-    path("extra_log/", ExtraLog.load_page, name="LoginPage")
+    path("extra_log/", ExtraLog.load_page, name="LoginPage"),
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 ]

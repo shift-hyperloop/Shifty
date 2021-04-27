@@ -6,7 +6,7 @@ logger.setLevel(logging.DEBUG)
 log_path = os.environ.get('SHIFTY_LOG_PATH')
 
 filename = os.path.join(log_path, 'Shifty_Log - ' + str(datetime.datetime.utcnow().date()) + '.txt')
-if not os.path.exists(filename):
+if not os.path.exists(log_path):
     os.mkdir(log_path)
     
 file_handler = logging.FileHandler(filename=filename)
