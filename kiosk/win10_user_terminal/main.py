@@ -81,10 +81,10 @@ def basket_delete_all(engine, q_cart):
 
 
 def query_barcode_scanner(engine, q_cart):
-
+    global time_start
     while True:
 
-        response = requests.get(url="http://192.168.1.132:5000/barcode").content.decode("utf-8")
+        response = requests.get(url="http://192.168.1.5:5000/barcode").content.decode("utf-8")
 
         # If there are no more barcodes in the queue, let function complete
         if response == "nothing new!":
@@ -97,6 +97,7 @@ def query_barcode_scanner(engine, q_cart):
             # If a list with more than one entry is returned, the product exists in the database. Add to basket.
             if len(product) > 1:
                 basket_add(product, engine, q_cart)
+                time_start = 0
 
             # Product did not exist in the database, TODO: inform that product was added to DB as {product[0]}.
             elif -300 <= int(product[0]) <= -100:
@@ -116,7 +117,7 @@ def query_distance_sensor(engine, q_cart):
 
     while True:
 
-        data = requests.get(url="http://192.168.1.132:5000/distance").content.decode("utf-8")
+        data = requests.get(url="http://192.168.1.5:5000/distance").content.decode("utf-8")
 
         if data == "nothing new!":
             break
@@ -142,7 +143,7 @@ def query_distance_sensor(engine, q_cart):
 def query_rfid_scanner(engine, q_cart):
     global time_start
     time_start += 1
-    response = requests.get(url="http://192.168.1.132:5000/RFID").content.decode("utf-8")
+    response = requests.get(url="http://192.168.1.5:5000/RFID").content.decode("utf-8")
     mainWindow = engine.rootObjects()[0]
     userString = mainWindow.findChild(QtCore.QObject, "userstring")
     #print(time_start)
@@ -155,8 +156,7 @@ def query_rfid_scanner(engine, q_cart):
     if response != "nothing new!":
         time_start=0
         user = get_user_data(response)
-        
-        print(user)   
+
         if type(user) != list:
             pass
             # TODO: Show user that he was added to database with the id {user}
@@ -176,7 +176,6 @@ def query_rfid_scanner(engine, q_cart):
                 tot_purchase_sum += int(item[2])
 
             if balance >= tot_purchase_sum:
-                print(list(q_cart.queue))
                 result = post_purchase_order(user_rfid, list_of_barcodes, tot_purchase_sum)
 
                 if not result:  # Unsuccessful purchase
@@ -208,7 +207,6 @@ def query_rfid_scanner(engine, q_cart):
                 basket_delete_all(engine, q_cart)
                 userString.insert(0, "You dont have enough in your balance. This message dissapears in a little bit")
                 userString.setProperty("color", "red")
-        print(list(q_cart.queue))
                 
                 
 
@@ -236,14 +234,16 @@ def run():
     attempts = 0
     while True:
         try:
-            requests.get(url="http://192.168.1.132:5000/init")  # Clears all the queues in the sensor suite
+            requests.get(url="http://192.168.1.5:5000/init")  # Clears all the queues in the sensor suite
             break
         except ConnectionError:
+            print("raspberry pi connection error")
             attempts += 1
             # TODO: Visual or audio response that connection failed?
             if attempts > 2:
                 sys.exit()
             time.sleep(10)
+
 
     timer = QtCore.QTimer(interval=100)
     timer.timeout.connect(partial(main_loop, myEngine, q_shopping_cart))
